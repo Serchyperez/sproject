@@ -5,29 +5,39 @@
 ### Completado ✅
 - Instalación completa: Laravel 12 + Filament 3.3 + Spatie Permissions + Sanctum
 - Base de datos: 14 migraciones ejecutadas, seeders funcionando
-- Admin panel (`/admin`): UserResource, ProjectResource, TaskResource, MilestoneResource, SprintResource, ImputationResource
-- App panel (`/app`): ProjectList, KanbanBoard, ScrumBoard, GanttView, WaterfallView
+- **Panel unificado `/app`**: usuarios normales ven 5 páginas de trabajo; admins ven además sección "Administración"
+- Páginas de trabajo (todos los usuarios): ProjectList, KanbanBoard, ScrumBoard, GanttView, WaterfallView
+- Sección Administración (solo admin/super_admin): UserResource, ProjectResource, TaskResource, SprintResource, MilestoneResource, ImputationResource
+- Panel `/admin` eliminado — login único en `http://sprojects.test:8888/app/login`
+- Control de acceso por recurso: `canViewAny()` (403 si acceso directo por URL) + `shouldRegisterNavigation()` (oculta nav)
 - Drag & drop: SortableJS integrado en Kanban y Scrum
 - Gantt: Frappe Gantt integrado (usando `dist/frappe-gantt.js`)
 - REST API: 29 endpoints bajo `/api/v1/` con autenticación Sanctum
 - Roles y permisos: 6 roles, 22 permisos, seeders con datos demo
 - Virtual host MAMP: `sprojects.test:8888` apuntando a `public/`
-- Header App panel: fondo negro en `.fi-sidebar-header` (sidebar) y `.fi-topbar > nav` (topbar)
-- Avatar usuario: `filter: invert(1)` en `.fi-user-avatar` → fondo blanco, texto negro
+- Header negro: `.fi-sidebar-header` (sidebar) y `.fi-topbar > nav` (topbar) con texto blanco
+- Avatar usuario: `filter: invert(1)` → fondo blanco, texto negro
 - `database/sprojects.sql` incluido en el repo (dump actualizado en cada commit)
 
 ### Pendiente / Por verificar 🔲
 - Confirmar visualmente que el header negro funciona correctamente (sidebar + topbar + avatar)
+- Verificar que `dev@sprojects.test` NO ve la sección Administración en el sidebar
+- Verificar que `admin@sprojects.test` SÍ ve la sección Administración
 - Probar drag & drop en Kanban y Scrum en el navegador
 - Probar vista Gantt con tareas con fechas
 - Probar vista Waterfall
-- Probar modal de detalle de tarea (subtareas, comentarios, imputaciones)
 - Probar REST API con cliente HTTP (login → token → GET /projects)
 
+### Arquitectura de paneles
+- **Un solo panel**: `/app` para todos los usuarios
+- Recursos admin en `app/Filament/App/Resources/` con `canViewAny()` + `shouldRegisterNavigation()` que comprueban rol `admin`/`super_admin`
+- Páginas de trabajo en `app/Filament/App/Pages/`
+- `AdminPanelProvider` eliminado; `app/Filament/Admin/` eliminado
+
 ### Decisiones de diseño
-- Header App panel diferenciado del Admin: fondo negro, texto blanco (Admin es Indigo estándar)
-- Sidebar header (`fi-sidebar-header`) también con fondo negro para coherencia visual
-- Avatar usuario en App panel: fondo blanco, texto negro (invertido respecto al default de Filament)
+- Header negro para todos los usuarios (sidebar + topbar) — diferencia visual respecto a un admin panel estándar Indigo
+- Sección "Administración" agrupada al final del sidebar, solo visible para admin/super_admin
+- Avatar usuario: fondo blanco, texto negro (`filter: invert(1)` sobre imagen de ui-avatars.com)
 
 ### Workflow de commits
 Antes de cada commit: (1) dump MySQL → `database/sprojects.sql`, (2) actualizar este archivo SPROJECTS.md
