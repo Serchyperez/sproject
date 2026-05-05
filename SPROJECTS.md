@@ -320,19 +320,26 @@ npm run build
 
 ## Especificaciones Funcionales y Roadmap
 
-### Roles
+### Roles y capacidades sobre proyectos
 
-| Rol | Capacidades |
-|---|---|
-| `super_admin` | Acceso total. Ve todos los proyectos. Cierra Y reabre cualquier mes de imputaciones. |
-| `project_manager` | Gestiona sus proyectos. Añade/invita miembros. Cierra el mes de sus proyectos. |
-| `developer` | Trabaja en tareas asignadas. Imputa horas. |
-| *(futuro)* | Roles personalizados con permisos granulares. |
+| Rol | Crear proyecto | Asignar proyecto a usuarios | Ser miembro de proyecto | Auto-asignarse tareas |
+|---|---|---|---|---|
+| `super_admin` | ✅ (elige tipo) | ✅ (cualquier proyecto) | ❌ (no es miembro) | — |
+| `project_manager` | ✅ (elige tipo) | ✅ (solo sus proyectos, incluso a otros PM) | ✅ (puede asignarse sus propios proyectos) | ✅ |
+| `developer` | ❌ | ❌ | ✅ (si PM/SA le asigna) | ✅ solo si el proyecto lo permite (flag en config del proyecto) |
+| *(futuro)* | Roles personalizados con permisos granulares por sección del proyecto | | | |
+
+**Notas:**
+- `super_admin` ve **todos** los proyectos en la sección Administración sin ser miembro
+- `project_manager` solo ve sus proyectos creados y los que tiene asignados
+- El flag `allow_self_assign` en el proyecto (editable en creación/edición) controla si los developers pueden auto-asignarse tareas
+- A futuro se podrán crear roles y permisos personalizados
 
 ### Cambios de BD pendientes
 
 | Tabla | Cambio | Motivo |
 |---|---|---|
+| `projects` | Añadir `allow_self_assign` (boolean, default false) | Permite a developers auto-asignarse tareas |
 | `tasks` | Añadir `predecessor_id` (FK nullable → tasks) | Dependencias Waterfall |
 | Nueva: `labels` | `id`, `project_id`, `name`, `color` | Agrupación Waterfall |
 | Nueva: `label_task` | `label_id`, `task_id` (pivot) | Relación etiqueta-tarea |
@@ -342,11 +349,14 @@ npm run build
 ### Roadmap de implementación
 
 #### Fase 1 — Base de datos
-- [ ] Migración: `tasks.predecessor_id`
+- [ ] Migración: `projects.allow_self_assign` (boolean)
+- [ ] Migración: `tasks.predecessor_id` (FK nullable → tasks)
 - [ ] Migración + modelo: `labels`, `label_task`
 - [ ] Migración + modelo: `month_closings`
 - [ ] Migración + modelo: `invitations`
-- [ ] Actualizar modelos `Task` y `Project` con nuevas relaciones
+- [ ] Actualizar modelo `Project`: añadir `allow_self_assign`, scope `visibleTo(User)` (filtra por rol)
+- [ ] Actualizar modelo `Task`: relación `predecessor`, scope `selfAssignable(User)`
+- [ ] Política de acceso: PM solo gestiona sus proyectos; SA ve todos sin ser miembro
 
 #### Fase 2 — Timesheet (imputaciones en grid)
 - Vista: tabla con filas=(proyecto, tarea, subtarea) y columnas=días del mes
