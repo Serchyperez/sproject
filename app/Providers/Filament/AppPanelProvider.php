@@ -69,7 +69,6 @@ class AppPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->navigationGroups([
                 NavigationGroup::make('Administración')
-                    ->icon('heroicon-o-shield-check')
                     ->collapsible(false),
             ])
             ->pages([

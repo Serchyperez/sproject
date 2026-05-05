@@ -21,8 +21,8 @@
 
 ### Pendiente / Por verificar 🔲
 - Confirmar visualmente que el header negro funciona correctamente (sidebar + topbar + avatar)
-- Verificar que `dev@sprojects.test` NO ve la sección Administración en el sidebar
-- Verificar que `admin@sprojects.test` SÍ ve la sección Administración
+- ~~Verificar que `dev@sprojects.test` NO ve la sección Administración en el sidebar~~ ✅
+- ~~Verificar que `admin@sprojects.test` SÍ ve la sección Administración~~ ✅
 - Probar drag & drop en Kanban y Scrum en el navegador
 - Probar vista Gantt con tareas con fechas
 - Probar vista Waterfall
