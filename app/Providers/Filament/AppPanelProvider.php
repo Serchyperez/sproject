@@ -30,7 +30,40 @@ class AppPanelProvider extends PanelProvider
                 'primary' => Color::Violet,
             ])
             ->brandName('SProjects')
-            ->renderHook('panels::styles.before', fn () => '<link rel="stylesheet" href="/sprojects/public/frappe-gantt.min.css">')
+            ->renderHook('panels::styles.before', fn () => '<link rel="stylesheet" href="/frappe-gantt.min.css">')
+            ->renderHook('panels::head.end', fn () => '
+<style>
+/* ── Sidebar header (logo area) — black bg, white text ── */
+.fi-sidebar-header {
+    background-color: #000 !important;
+    --tw-ring-color: transparent !important;
+    box-shadow: none !important;
+}
+.fi-sidebar-header .fi-logo {
+    color: #fff !important;
+}
+.fi-sidebar-header svg {
+    color: #fff !important;
+    fill: currentColor;
+}
+
+/* ── Topbar nav — black bg ── */
+.fi-topbar > nav {
+    background-color: #000 !important;
+    --tw-ring-color: transparent !important;
+    box-shadow: none !important;
+}
+/* Hamburger / close sidebar icon buttons */
+.fi-topbar nav .fi-topbar-open-sidebar-btn svg,
+.fi-topbar nav .fi-topbar-close-sidebar-btn svg {
+    color: #fff !important;
+}
+
+/* ── User avatar — invert to white bg, black text ── */
+.fi-user-avatar {
+    filter: invert(1) !important;
+}
+</style>')
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->pages([
