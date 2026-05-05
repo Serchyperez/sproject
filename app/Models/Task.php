@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Task extends Model
 {
     protected $fillable = [
-        'project_id', 'parent_id', 'task_status_id', 'sprint_id', 'milestone_id',
+        'project_id', 'parent_id', 'predecessor_id', 'task_status_id', 'sprint_id', 'milestone_id',
         'assigned_to', 'created_by', 'title', 'description', 'priority', 'type',
         'story_points', 'estimated_hours', 'due_date', 'position',
     ];
@@ -29,6 +29,29 @@ class Task extends Model
     public function subtasks()
     {
         return $this->hasMany(Task::class, 'parent_id');
+    }
+
+    public function predecessor()
+    {
+        return $this->belongsTo(Task::class, 'predecessor_id');
+    }
+
+    public function successors()
+    {
+        return $this->hasMany(Task::class, 'predecessor_id');
+    }
+
+    public function labels()
+    {
+        return $this->belongsToMany(Label::class, 'label_task');
+    }
+
+    public function scopeSelfAssignable($query, User $user)
+    {
+        return $query->whereHas('project', function ($q) use ($user) {
+            $q->where('allow_self_assign', true)
+              ->whereHas('members', fn ($m) => $m->where('users.id', $user->id));
+        });
     }
 
     public function status()

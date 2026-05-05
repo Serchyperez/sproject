@@ -10,11 +10,13 @@ class Project extends Model
     protected $fillable = [
         'owner_id', 'name', 'slug', 'description', 'methodology',
         'status', 'color', 'cover_image', 'start_date', 'end_date',
+        'allow_self_assign',
     ];
 
     protected $casts = [
-        'start_date' => 'date',
-        'end_date' => 'date',
+        'start_date'       => 'date',
+        'end_date'         => 'date',
+        'allow_self_assign' => 'boolean',
     ];
 
     protected static function boot(): void
@@ -67,5 +69,32 @@ class Project extends Model
     public function activeSprint()
     {
         return $this->hasOne(Sprint::class)->where('status', 'active');
+    }
+
+    public function labels()
+    {
+        return $this->hasMany(Label::class);
+    }
+
+    public function monthClosings()
+    {
+        return $this->hasMany(MonthClosing::class);
+    }
+
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class);
+    }
+
+    public function scopeVisibleTo($query, User $user)
+    {
+        if ($user->hasRole('super_admin')) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($user) {
+            $q->where('owner_id', $user->id)
+              ->orWhereHas('members', fn ($m) => $m->where('users.id', $user->id));
+        });
     }
 }

@@ -4,7 +4,6 @@ namespace App\Filament\App\Pages;
 
 use App\Models\Project;
 use App\Models\Task;
-use App\Models\TaskStatus;
 use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 
@@ -18,12 +17,12 @@ class KanbanBoard extends Page
     #[Url]
     public ?int $projectId = null;
 
+    public bool $showBacklog = false;
+
     public function mount(): void
     {
         if (!$this->projectId) {
-            $first = Project::where('owner_id', auth()->id())
-                ->orWhereHas('members', fn ($q) => $q->where('user_id', auth()->id()))
-                ->first();
+            $first = Project::visibleTo(auth()->user())->first();
             $this->projectId = $first?->id;
         }
     }
@@ -31,22 +30,39 @@ class KanbanBoard extends Page
     public function getProject(): ?Project
     {
         return $this->projectId
-            ? Project::with(['taskStatuses.tasks.assignee', 'members'])->find($this->projectId)
+            ? Project::with(['taskStatuses.tasks' => fn ($q) => $q->with('assignee')->orderBy('position'), 'members'])->find($this->projectId)
             : null;
-    }
-
-    public function moveTask(int $taskId, int $statusId, int $position): void
-    {
-        $task = Task::findOrFail($taskId);
-        $task->update(['task_status_id' => $statusId, 'position' => $position]);
-
-        $this->dispatch('task-moved');
     }
 
     public function getProjects()
     {
-        return Project::where('owner_id', auth()->id())
-            ->orWhereHas('members', fn ($q) => $q->where('user_id', auth()->id()))
+        return Project::visibleTo(auth()->user())->get();
+    }
+
+    public function getBacklogTasks()
+    {
+        if (!$this->projectId) return collect();
+
+        return Task::where('project_id', $this->projectId)
+            ->whereNull('task_status_id')
+            ->whereNull('parent_id')
+            ->orderBy('position')
             ->get();
+    }
+
+    public function moveTask(int $taskId, int $statusId, int $position): void
+    {
+        Task::findOrFail($taskId)->update([
+            'task_status_id' => $statusId,
+            'position'       => $position,
+        ]);
+
+        $this->dispatch('task-moved');
+    }
+
+    public function moveToBacklog(int $taskId): void
+    {
+        Task::findOrFail($taskId)->update(['task_status_id' => null]);
+        $this->dispatch('task-moved');
     }
 }

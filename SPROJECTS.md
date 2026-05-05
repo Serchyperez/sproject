@@ -348,15 +348,15 @@ npm run build
 
 ### Roadmap de implementación
 
-#### Fase 1 — Base de datos
-- [ ] Migración: `projects.allow_self_assign` (boolean)
-- [ ] Migración: `tasks.predecessor_id` (FK nullable → tasks)
-- [ ] Migración + modelo: `labels`, `label_task`
-- [ ] Migración + modelo: `month_closings`
-- [ ] Migración + modelo: `invitations`
-- [ ] Actualizar modelo `Project`: añadir `allow_self_assign`, scope `visibleTo(User)` (filtra por rol)
-- [ ] Actualizar modelo `Task`: relación `predecessor`, scope `selfAssignable(User)`
-- [ ] Política de acceso: PM solo gestiona sus proyectos; SA ve todos sin ser miembro
+#### Fase 1 — Base de datos ✅
+- [x] Migración: `projects.allow_self_assign` (boolean)
+- [x] Migración: `tasks.predecessor_id` (FK nullable → tasks)
+- [x] Migración + modelo: `labels`, `label_task`
+- [x] Migración + modelo: `month_closings`
+- [x] Migración + modelo: `invitations`
+- [x] Actualizar modelo `Project`: `allow_self_assign`, relaciones `labels/monthClosings/invitations`, scope `visibleTo(User)`
+- [x] Actualizar modelo `Task`: `predecessor_id` en fillable, relaciones `predecessor/successors/labels`, scope `selfAssignable(User)`
+- [ ] Política de acceso: PM solo gestiona sus proyectos; SA ve todos sin ser miembro *(se implementará en Fase 7)*
 
 #### Fase 2 — Timesheet (imputaciones en grid)
 - Vista: tabla con filas=(proyecto, tarea, subtarea) y columnas=días del mes
@@ -394,9 +394,11 @@ npm run build
 - [ ] Board Scrum: historias expandibles con sus tareas
 - [ ] Sprint planning mejorado (drag backlog → sprint)
 
-#### Fase 6 — Kanban (mejoras)
-- [ ] Backlog toggle (tareas sin status)
-- [ ] WIP limits visuales por columna
+#### Fase 6 — Kanban (mejoras) ✅
+- [x] Backlog toggle: panel lateral con tareas sin `task_status_id`, arrastrable al board
+- [x] WIP limits visuales: barra de progreso por columna, badge rojo + ring cuando se supera el límite
+- [x] `moveToBacklog()`: mover tarea de vuelta al backlog desde el board
+- [x] Scope `visibleTo()` aplicado a la carga de proyectos en KanbanBoard
 
 #### Fase 7 — Equipos e invitaciones
 - [ ] UI gestión de miembros del proyecto

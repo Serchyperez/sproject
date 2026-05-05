@@ -95,6 +95,43 @@ LOCK TABLES `failed_jobs` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `invitations`
+--
+
+DROP TABLE IF EXISTS `invitations`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `invitations` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `role` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'developer',
+  `token` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `invited_by` bigint(20) unsigned NOT NULL,
+  `expires_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `accepted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `invitations_token_unique` (`token`),
+  KEY `invitations_project_id_foreign` (`project_id`),
+  KEY `invitations_invited_by_foreign` (`invited_by`),
+  KEY `invitations_email_project_id_index` (`email`,`project_id`),
+  CONSTRAINT `invitations_invited_by_foreign` FOREIGN KEY (`invited_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `invitations_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `invitations`
+--
+
+LOCK TABLES `invitations` WRITE;
+/*!40000 ALTER TABLE `invitations` DISABLE KEYS */;
+/*!40000 ALTER TABLE `invitations` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `job_batches`
 --
 
@@ -155,6 +192,61 @@ LOCK TABLES `jobs` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `label_task`
+--
+
+DROP TABLE IF EXISTS `label_task`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `label_task` (
+  `label_id` bigint(20) unsigned NOT NULL,
+  `task_id` bigint(20) unsigned NOT NULL,
+  PRIMARY KEY (`label_id`,`task_id`),
+  KEY `label_task_task_id_foreign` (`task_id`),
+  CONSTRAINT `label_task_label_id_foreign` FOREIGN KEY (`label_id`) REFERENCES `labels` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `label_task_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `label_task`
+--
+
+LOCK TABLES `label_task` WRITE;
+/*!40000 ALTER TABLE `label_task` DISABLE KEYS */;
+/*!40000 ALTER TABLE `label_task` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `labels`
+--
+
+DROP TABLE IF EXISTS `labels`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `labels` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `color` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#6366f1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `labels_project_id_foreign` (`project_id`),
+  CONSTRAINT `labels_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `labels`
+--
+
+LOCK TABLES `labels` WRITE;
+/*!40000 ALTER TABLE `labels` DISABLE KEYS */;
+/*!40000 ALTER TABLE `labels` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `migrations`
 --
 
@@ -166,7 +258,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -175,7 +267,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_05_05_101605_create_permission_tables',1),(5,'2026_05_05_101607_create_personal_access_tokens_table',1),(6,'2026_05_05_110000_create_projects_table',1),(7,'2026_05_05_110001_create_project_members_table',1),(8,'2026_05_05_110002_create_task_statuses_table',1),(9,'2026_05_05_110003_create_milestones_table',1),(10,'2026_05_05_110004_create_sprints_table',1),(11,'2026_05_05_110005_create_tasks_table',1),(12,'2026_05_05_110006_create_task_imputations_table',1),(13,'2026_05_05_110007_create_task_comments_table',1),(14,'2026_05_05_110008_create_task_attachments_table',1);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_05_05_101605_create_permission_tables',1),(5,'2026_05_05_101607_create_personal_access_tokens_table',1),(6,'2026_05_05_110000_create_projects_table',1),(7,'2026_05_05_110001_create_project_members_table',1),(8,'2026_05_05_110002_create_task_statuses_table',1),(9,'2026_05_05_110003_create_milestones_table',1),(10,'2026_05_05_110004_create_sprints_table',1),(11,'2026_05_05_110005_create_tasks_table',1),(12,'2026_05_05_110006_create_task_imputations_table',1),(13,'2026_05_05_110007_create_task_comments_table',1),(14,'2026_05_05_110008_create_task_attachments_table',1),(15,'2026_05_05_180302_add_allow_self_assign_to_projects_table',2),(16,'2026_05_05_180303_add_predecessor_id_to_tasks_table',2),(17,'2026_05_05_180303_create_labels_table',2),(18,'2026_05_05_180304_create_label_task_table',2),(19,'2026_05_05_180305_create_invitations_table',2),(20,'2026_05_05_180305_create_month_closings_table',2);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -263,6 +355,44 @@ LOCK TABLES `model_has_roles` WRITE;
 /*!40000 ALTER TABLE `model_has_roles` DISABLE KEYS */;
 INSERT INTO `model_has_roles` VALUES (1,'App\\Models\\User',1),(4,'App\\Models\\User',2),(3,'App\\Models\\User',3);
 /*!40000 ALTER TABLE `model_has_roles` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `month_closings`
+--
+
+DROP TABLE IF EXISTS `month_closings`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `month_closings` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `project_id` bigint(20) unsigned NOT NULL,
+  `year` smallint(5) unsigned NOT NULL,
+  `month` tinyint(3) unsigned NOT NULL,
+  `is_closed` tinyint(1) NOT NULL DEFAULT '0',
+  `closed_by` bigint(20) unsigned DEFAULT NULL,
+  `closed_at` timestamp NULL DEFAULT NULL,
+  `reopened_by` bigint(20) unsigned DEFAULT NULL,
+  `reopened_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `month_closings_project_id_year_month_unique` (`project_id`,`year`,`month`),
+  KEY `month_closings_closed_by_foreign` (`closed_by`),
+  KEY `month_closings_reopened_by_foreign` (`reopened_by`),
+  CONSTRAINT `month_closings_closed_by_foreign` FOREIGN KEY (`closed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `month_closings_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `month_closings_reopened_by_foreign` FOREIGN KEY (`reopened_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `month_closings`
+--
+
+LOCK TABLES `month_closings` WRITE;
+/*!40000 ALTER TABLE `month_closings` DISABLE KEYS */;
+/*!40000 ALTER TABLE `month_closings` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -400,6 +530,7 @@ CREATE TABLE `projects` (
   `status` enum('active','archived','completed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `color` varchar(7) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '#6366f1',
   `cover_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `allow_self_assign` tinyint(1) NOT NULL DEFAULT '0',
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -417,7 +548,7 @@ CREATE TABLE `projects` (
 
 LOCK TABLES `projects` WRITE;
 /*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-INSERT INTO `projects` VALUES (1,1,'Demo Kanban Project','demo-kanban','Proyecto de demostración con metodología Kanban','kanban','active','#6366f1',NULL,'2026-05-05','2026-08-05','2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,'Demo Scrum Project','demo-scrum','Proyecto de demostración con metodología Scrum','scrum','active','#8b5cf6',NULL,'2026-05-05','2026-11-05','2026-05-05 08:18:41','2026-05-05 08:18:41');
+INSERT INTO `projects` VALUES (1,1,'Demo Kanban Project','demo-kanban','Proyecto de demostración con metodología Kanban','kanban','active','#6366f1',NULL,0,'2026-05-05','2026-08-05','2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,'Demo Scrum Project','demo-scrum','Proyecto de demostración con metodología Scrum','scrum','active','#8b5cf6',NULL,0,'2026-05-05','2026-11-05','2026-05-05 08:18:41','2026-05-05 08:18:41');
 /*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -502,7 +633,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('hugqppJ45fJNvAYFs1iidwDagDhwRBEXWAdVxBhT',3,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiWUtFVE5pQVViQ1ZERERQQ0VFTDZIck1BY1lndDUwTDRGZnNtVk4xTCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDM6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9wcm9qZWN0LWxpc3QiO3M6NToicm91dGUiO3M6MzE6ImZpbGFtZW50LmFwcC5wYWdlcy5wcm9qZWN0LWxpc3QiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjY0OiJhZjQ1MTRhYTBmOWZiNzYzMDY1MjIwOGRhMzVkYmY5MTNlMDhhNzM4MTE4MTE5OTM3YWJkM2E2NTRhYzZjM2Y4Ijt9',1778003407),('LusHLBRpl3ZqiwymQN48R5pBUzuXsCGaexFI9t5J',NULL,'127.0.0.1','curl/8.7.1','YTozOntzOjY6Il90b2tlbiI7czo0MDoiYlZBOE5PbnZSSUY3TXg0aDJldVMxb3FxNXUyTXdkZ2d2TlowbVJCRyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9sb2dpbiI7czo1OiJyb3V0ZSI7czoyMzoiZmlsYW1lbnQuYXBwLmF1dGgubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1777999256),('ToTD9mB0amIDisU7IyRVtT7Cm3VFyYnvUioqTv8q',1,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiRlJwRkZyRHF2U3ZUZ0ZiZGk3d1hOTlExUTZyN2wyTm1QSTdnbnhRNiI7czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2NDoiMjBiYzkxNWE2NmZiNGRlMTJkMThmNzk5MjExZDYxMGQwYTk1Zjg5NGRhZjUyZjliMzQ2ZmNhYWZhNDI4YTBiMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcCI7czo1OiJyb3V0ZSI7czoyODoiZmlsYW1lbnQuYXBwLnBhZ2VzLmRhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1777996945);
+INSERT INTO `sessions` VALUES ('byy2uQpNsew1vxsYKhxUvQwQ0zkvTywwDotDyIxD',NULL,'127.0.0.1','curl/8.7.1','YTozOntzOjY6Il90b2tlbiI7czo0MDoibmtUZ1dZajNlekhCdTNCNjZ3UTQybXlsejN3MTlDU0VrT1ZBZEYyUCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9sb2dpbiI7czo1OiJyb3V0ZSI7czoyMzoiZmlsYW1lbnQuYXBwLmF1dGgubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1778004331),('hugqppJ45fJNvAYFs1iidwDagDhwRBEXWAdVxBhT',3,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiWUtFVE5pQVViQ1ZERERQQ0VFTDZIck1BY1lndDUwTDRGZnNtVk4xTCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDM6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9wcm9qZWN0LWxpc3QiO3M6NToicm91dGUiO3M6MzE6ImZpbGFtZW50LmFwcC5wYWdlcy5wcm9qZWN0LWxpc3QiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjY0OiJhZjQ1MTRhYTBmOWZiNzYzMDY1MjIwOGRhMzVkYmY5MTNlMDhhNzM4MTE4MTE5OTM3YWJkM2E2NTRhYzZjM2Y4Ijt9',1778003407),('LusHLBRpl3ZqiwymQN48R5pBUzuXsCGaexFI9t5J',NULL,'127.0.0.1','curl/8.7.1','YTozOntzOjY6Il90b2tlbiI7czo0MDoiYlZBOE5PbnZSSUY3TXg0aDJldVMxb3FxNXUyTXdkZ2d2TlowbVJCRyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9sb2dpbiI7czo1OiJyb3V0ZSI7czoyMzoiZmlsYW1lbnQuYXBwLmF1dGgubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1777999256),('ToTD9mB0amIDisU7IyRVtT7Cm3VFyYnvUioqTv8q',1,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiRlJwRkZyRHF2U3ZUZ0ZiZGk3d1hOTlExUTZyN2wyTm1QSTdnbnhRNiI7czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2NDoiMjBiYzkxNWE2NmZiNGRlMTJkMThmNzk5MjExZDYxMGQwYTk1Zjg5NGRhZjUyZjliMzQ2ZmNhYWZhNDI4YTBiMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcCI7czo1OiJyb3V0ZSI7czoyODoiZmlsYW1lbnQuYXBwLnBhZ2VzLmRhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1777996945);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -682,6 +813,7 @@ CREATE TABLE `tasks` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `project_id` bigint(20) unsigned NOT NULL,
   `parent_id` bigint(20) unsigned DEFAULT NULL,
+  `predecessor_id` bigint(20) unsigned DEFAULT NULL,
   `task_status_id` bigint(20) unsigned DEFAULT NULL,
   `sprint_id` bigint(20) unsigned DEFAULT NULL,
   `milestone_id` bigint(20) unsigned DEFAULT NULL,
@@ -705,10 +837,12 @@ CREATE TABLE `tasks` (
   KEY `tasks_milestone_id_foreign` (`milestone_id`),
   KEY `tasks_assigned_to_foreign` (`assigned_to`),
   KEY `tasks_created_by_foreign` (`created_by`),
+  KEY `tasks_predecessor_id_foreign` (`predecessor_id`),
   CONSTRAINT `tasks_assigned_to_foreign` FOREIGN KEY (`assigned_to`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `tasks_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`),
   CONSTRAINT `tasks_milestone_id_foreign` FOREIGN KEY (`milestone_id`) REFERENCES `milestones` (`id`) ON DELETE SET NULL,
   CONSTRAINT `tasks_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `tasks_predecessor_id_foreign` FOREIGN KEY (`predecessor_id`) REFERENCES `tasks` (`id`) ON DELETE SET NULL,
   CONSTRAINT `tasks_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tasks_sprint_id_foreign` FOREIGN KEY (`sprint_id`) REFERENCES `sprints` (`id`) ON DELETE SET NULL,
   CONSTRAINT `tasks_task_status_id_foreign` FOREIGN KEY (`task_status_id`) REFERENCES `task_statuses` (`id`) ON DELETE SET NULL
@@ -721,7 +855,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,1,NULL,4,NULL,1,2,1,'Configurar entorno de desarrollo',NULL,'high','task',NULL,9.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,NULL,4,NULL,1,2,1,'Diseñar base de datos',NULL,'high','task',NULL,6.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(3,1,NULL,2,NULL,1,2,1,'Implementar autenticación',NULL,'high','task',NULL,10.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 10:12:59'),(4,1,NULL,1,NULL,1,2,1,'Crear panel de administración',NULL,'medium','task',NULL,9.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 10:13:27'),(5,1,NULL,1,NULL,1,2,1,'Desarrollar API REST',NULL,'medium','task',NULL,6.00,NULL,4,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(6,1,NULL,2,NULL,1,2,1,'Implementar Kanban Board',NULL,'medium','task',NULL,4.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 10:13:57'),(7,1,NULL,2,NULL,1,2,1,'Vista Gantt',NULL,'low','task',NULL,13.00,NULL,2,'2026-05-05 08:18:41','2026-05-05 15:48:48'),(8,1,NULL,1,NULL,1,2,1,'Tests unitarios',NULL,'low','task',NULL,7.00,NULL,7,'2026-05-05 08:18:41','2026-05-05 08:18:41');
+INSERT INTO `tasks` VALUES (1,1,NULL,NULL,4,NULL,1,2,1,'Configurar entorno de desarrollo',NULL,'high','task',NULL,9.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,NULL,NULL,4,NULL,1,2,1,'Diseñar base de datos',NULL,'high','task',NULL,6.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(3,1,NULL,NULL,2,NULL,1,2,1,'Implementar autenticación',NULL,'high','task',NULL,10.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 10:12:59'),(4,1,NULL,NULL,1,NULL,1,2,1,'Crear panel de administración',NULL,'medium','task',NULL,9.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 10:13:27'),(5,1,NULL,NULL,1,NULL,1,2,1,'Desarrollar API REST',NULL,'medium','task',NULL,6.00,NULL,4,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(6,1,NULL,NULL,2,NULL,1,2,1,'Implementar Kanban Board',NULL,'medium','task',NULL,4.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 10:13:57'),(7,1,NULL,NULL,2,NULL,1,2,1,'Vista Gantt',NULL,'low','task',NULL,13.00,NULL,2,'2026-05-05 08:18:41','2026-05-05 15:48:48'),(8,1,NULL,NULL,1,NULL,1,2,1,'Tests unitarios',NULL,'low','task',NULL,7.00,NULL,7,'2026-05-05 08:18:41','2026-05-05 08:18:41');
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -768,4 +902,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-05 19:59:28
+-- Dump completed on 2026-05-05 20:05:54
