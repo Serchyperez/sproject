@@ -1,6 +1,6 @@
 # SProjects — Project Management App (JIRA-like)
 
-## Estado actual del proyecto (última actualización: 2026-05-05)
+## Estado actual del proyecto (última actualización: 2026-05-05 — specs funcionales añadidas)
 
 ### Completado ✅
 - Instalación completa: Laravel 12 + Filament 3.3 + Spatie Permissions + Sanctum
@@ -313,6 +313,92 @@ npm run build
 ## GitHub
 - Repo: `https://github.com/Serchyperez/sproject.git`
 - Remote: `origin`
+
+---
+
+---
+
+## Especificaciones Funcionales y Roadmap
+
+### Roles
+
+| Rol | Capacidades |
+|---|---|
+| `super_admin` | Acceso total. Ve todos los proyectos. Cierra Y reabre cualquier mes de imputaciones. |
+| `project_manager` | Gestiona sus proyectos. Añade/invita miembros. Cierra el mes de sus proyectos. |
+| `developer` | Trabaja en tareas asignadas. Imputa horas. |
+| *(futuro)* | Roles personalizados con permisos granulares. |
+
+### Cambios de BD pendientes
+
+| Tabla | Cambio | Motivo |
+|---|---|---|
+| `tasks` | Añadir `predecessor_id` (FK nullable → tasks) | Dependencias Waterfall |
+| Nueva: `labels` | `id`, `project_id`, `name`, `color` | Agrupación Waterfall |
+| Nueva: `label_task` | `label_id`, `task_id` (pivot) | Relación etiqueta-tarea |
+| Nueva: `month_closings` | `project_id`, `year`, `month`, `closed_by`, `closed_at`, `reopened_by`, `reopened_at`, `is_closed` | Cierre de mes |
+| Nueva: `invitations` | `email`, `project_id`, `role`, `token`, `invited_by`, `expires_at`, `accepted_at` | Invitaciones email |
+
+### Roadmap de implementación
+
+#### Fase 1 — Base de datos
+- [ ] Migración: `tasks.predecessor_id`
+- [ ] Migración + modelo: `labels`, `label_task`
+- [ ] Migración + modelo: `month_closings`
+- [ ] Migración + modelo: `invitations`
+- [ ] Actualizar modelos `Task` y `Project` con nuevas relaciones
+
+#### Fase 2 — Timesheet (imputaciones en grid)
+- Vista: tabla con filas=(proyecto, tarea, subtarea) y columnas=días del mes
+- Celdas editables con horas (decimal). Navegación por teclado con flechas ←→↑↓
+- Enter baja celda, Tab avanza derecha. Guardado automático al salir de celda (Livewire)
+- Totales por fila y por columna. Solo mes en curso es editable
+- Selector de mes para consultar meses cerrados (read-only, fondo gris)
+- [ ] Nueva página Livewire: `TimesheetView.php`
+- [ ] Blade: tabla editable con Alpine.js para navegación por teclado
+- [ ] Lógica: cargar tareas asignadas × días del mes
+- [ ] Lógica: save/update `task_imputations` en blur de celda
+- [ ] Totales y bloqueo por `month_closings`
+
+#### Fase 3 — Cierre de mes
+- PM del proyecto: cierra mes vencido (anterior al actual) → entradas bloqueadas
+- Super_admin: cierra Y reabre cualquier mes de cualquier proyecto
+- [ ] Botón "Cerrar mes" en timesheet (solo PM)
+- [ ] Lógica `closeMonth()` / `reopenMonth()` en Livewire
+- [ ] Vista en Administración: estado de cierre por proyecto/mes
+
+#### Fase 4 — Waterfall
+- Tareas con `start_date` + `end_date`. Si start==end → hito (diamante en Gantt)
+- `predecessor_id`: dependencia visual en Gantt (sin bloqueo hard)
+- Labels de color para agrupar tareas en fases
+- [ ] Rediseñar `WaterfallView.php`
+- [ ] UI gestión de etiquetas por proyecto
+- [ ] Asignar predecesora y etiquetas en modal de tarea
+- [ ] Gantt: dependencias (`dependencies: 'task-X'`) e hitos (`custom_class: 'milestone'`)
+- [ ] Vista lista agrupada por etiqueta
+
+#### Fase 5 — Scrum (historias de usuario)
+- Historias = tareas tipo `story` (supra-tarea). Tareas técnicas = `parent_id` → la story
+- Board: historias con tareas expandibles. Criterios de aceptación en el detalle
+- [ ] UI crear historia y vincular tareas técnicas
+- [ ] Board Scrum: historias expandibles con sus tareas
+- [ ] Sprint planning mejorado (drag backlog → sprint)
+
+#### Fase 6 — Kanban (mejoras)
+- [ ] Backlog toggle (tareas sin status)
+- [ ] WIP limits visuales por columna
+
+#### Fase 7 — Equipos e invitaciones
+- [ ] UI gestión de miembros del proyecto
+- [ ] Añadir usuario existente (búsqueda)
+- [ ] Crear usuario nuevo desde proyecto
+- [ ] Invitación por email (token → link registro → asignación automática al proyecto)
+
+#### Fase 8 — Pulido general
+- [ ] "Mis Proyectos": progreso %, avatares del equipo, acceso directo al board
+- [ ] Modal de detalle de tarea (subtareas, comentarios, adjuntos, imputaciones)
+- [ ] Dashboard de proyecto (resumen: sprints activos, hitos próximos, tareas pendientes)
+- [ ] Super_admin ve todos los proyectos sin filtro de membresía
 
 ---
 
