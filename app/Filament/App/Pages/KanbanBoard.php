@@ -4,6 +4,7 @@ namespace App\Filament\App\Pages;
 
 use App\Models\Project;
 use App\Models\Task;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Livewire\Attributes\Url;
 
@@ -18,6 +19,8 @@ class KanbanBoard extends Page
     public ?int $projectId = null;
 
     public bool $showBacklog = false;
+
+    public ?array $lastMove = null;
 
     public function mount(): void
     {
@@ -52,17 +55,57 @@ class KanbanBoard extends Page
 
     public function moveTask(int $taskId, int $statusId, int $position): void
     {
-        Task::findOrFail($taskId)->update([
+        $task = Task::findOrFail($taskId);
+        $this->lastMove = [
+            'taskId'   => $taskId,
+            'statusId' => $task->task_status_id,
+            'position' => $task->position,
+        ];
+        $task->update([
             'task_status_id' => $statusId,
             'position'       => $position,
         ]);
-
         $this->dispatch('task-moved');
     }
 
     public function moveToBacklog(int $taskId): void
     {
-        Task::findOrFail($taskId)->update(['task_status_id' => null]);
+        $task = Task::findOrFail($taskId);
+        $this->lastMove = [
+            'taskId'   => $taskId,
+            'statusId' => $task->task_status_id,
+            'position' => $task->position,
+        ];
+        $task->update(['task_status_id' => null]);
+        $this->dispatch('task-moved');
+    }
+
+    public function undoLastMove(): void
+    {
+        if (!$this->lastMove) {
+            Notification::make()
+                ->title('Nada que deshacer')
+                ->warning()
+                ->send();
+            return;
+        }
+
+        Task::findOrFail($this->lastMove['taskId'])->update([
+            'task_status_id' => $this->lastMove['statusId'],
+            'position'       => $this->lastMove['position'],
+        ]);
+        $this->lastMove = null;
+        $this->dispatch('task-moved');
+
+        Notification::make()
+            ->title('Movimiento deshecho')
+            ->success()
+            ->send();
+    }
+
+    public function cancelDrag(): void
+    {
+        // No DB change — just re-render so the DOM resets to DB state
         $this->dispatch('task-moved');
     }
 }

@@ -35,6 +35,7 @@
                              data-status="">
                             @forelse($this->getBacklogTasks() as $task)
                                 <div class="kanban-card bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 cursor-grab hover:shadow-md transition-shadow"
+                                     wire:key="task-{{ $task->id }}"
                                      data-task="{{ $task->id }}">
                                     <p class="text-sm font-medium text-gray-800 dark:text-gray-100 mb-1">{{ $task->title }}</p>
                                     <div class="flex items-center justify-between">
@@ -61,7 +62,7 @@
                             $taskCount = $status->tasks->count();
                             $wipExceeded = $status->wip_limit && $taskCount > $status->wip_limit;
                         @endphp
-                        <div class="flex-shrink-0 w-72">
+                        <div class="flex-shrink-0 w-72" wire:key="col-{{ $status->id }}">
                             {{-- Column header --}}
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
@@ -92,10 +93,11 @@
                             @endif
 
                             {{-- Column body --}}
-                            <div class="kanban-column space-y-2 min-h-16 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 {{ $wipExceeded ? 'ring-2 ring-red-300 dark:ring-red-800' : '' }}"
+                            <div class="kanban-column space-y-2 min-h-32 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 {{ $wipExceeded ? 'ring-2 ring-red-300 dark:ring-red-800' : '' }}"
                                  data-status="{{ $status->id }}">
                                 @foreach($status->tasks->sortBy('position') as $task)
                                     <div class="kanban-card bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 cursor-grab hover:shadow-md transition-shadow"
+                                         wire:key="task-{{ $task->id }}"
                                          data-task="{{ $task->id }}">
                                         <div class="flex items-start justify-between gap-2 mb-2">
                                             <span class="text-xs font-medium px-1.5 py-0.5 rounded
@@ -135,17 +137,48 @@
         @endif
     </div>
 
+    @assets
+    <script src="/sortable.min.js"></script>
+    @endassets
+
     @script
     <script>
-        function initKanban() {
+        const clearDropHighlight = () => {
+            document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('kanban-drop-active'));
+        };
+
+        // Ctrl+Z / Cmd+Z — undo last completed move
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                e.preventDefault();
+                $wire.call('undoLastMove');
+            }
+        });
+
+        const initKanban = () => {
             document.querySelectorAll('.kanban-column').forEach(column => {
                 if (column._sortable) column._sortable.destroy();
                 column._sortable = new Sortable(column, {
                     group: 'kanban',
                     animation: 150,
-                    ghostClass: 'opacity-50',
+                    ghostClass: 'kanban-ghost',
                     dragClass: 'shadow-2xl',
-                    onEnd: function (evt) {
+                    emptyInsertThreshold: 40,
+                    onMove: (evt) => {
+                        clearDropHighlight();
+                        if (evt.to) evt.to.classList.add('kanban-drop-active');
+                    },
+                    onEnd: (evt) => {
+                        clearDropHighlight();
+
+                        // SortableJS fires onEnd from the native 'drop' event on a
+                        // successful move, but from 'dragend' when the drag was
+                        // cancelled (Escape key or released outside a valid zone).
+                        if (evt.originalEvent?.type === 'dragend') {
+                            $wire.call('cancelDrag');
+                            return;
+                        }
+
                         const taskId = parseInt(evt.item.dataset.task);
                         const rawStatus = evt.to.dataset.status;
                         const statusId = rawStatus === '' ? null : parseInt(rawStatus);
@@ -159,7 +192,7 @@
                     }
                 });
             });
-        }
+        };
 
         initKanban();
         $wire.on('task-moved', () => initKanban());

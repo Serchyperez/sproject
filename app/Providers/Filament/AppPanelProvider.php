@@ -33,6 +33,7 @@ class AppPanelProvider extends PanelProvider
             ->brandName('SProjects')
             ->renderHook('panels::styles.before', fn () => '<link rel="stylesheet" href="/frappe-gantt.min.css">')
             ->renderHook('panels::head.end', fn () => '
+<script src="/sortable.min.js"></script>
 <style>
 /* ── Sidebar header (logo area) — black bg, white text ── */
 .fi-sidebar-header {
@@ -63,6 +64,22 @@ class AppPanelProvider extends PanelProvider
 /* ── User avatar — invert to white bg, black text ── */
 .fi-user-avatar {
     filter: invert(1) !important;
+}
+
+/* ── Kanban drag & drop ── */
+.kanban-column.kanban-drop-active {
+    background-color: rgba(156, 163, 175, 0.18) !important;
+    outline: 2px dashed #d1d5db !important;
+    outline-offset: -2px !important;
+    transition: background-color 0.15s ease;
+}
+.dark .kanban-column.kanban-drop-active {
+    background-color: rgba(255,255,255,0.07) !important;
+    outline-color: #4b5563 !important;
+}
+.kanban-ghost {
+    opacity: 0.4 !important;
+    border: 2px dashed #a78bfa !important;
 }
 </style>')
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
