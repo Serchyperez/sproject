@@ -1,6 +1,6 @@
 # SProjects — Project Management App (JIRA-like)
 
-## Estado actual del proyecto (última actualización: 2026-05-06 — Fase 4)
+## Estado actual del proyecto (última actualización: 2026-05-06 — Fase 5)
 
 ### Completado ✅
 - Instalación completa: Laravel 12 + Filament 3.3 + Spatie Permissions + Sanctum
@@ -21,6 +21,7 @@
 - **Fase 3 (Cierre de mes)**: `closeMonth` / `reopenMonth` con guards por rol, sección de cierre en timesheet (PM/super_admin), página de administración `/app/month-closing-admin` con grid anual por proyecto, scroll layout de dos paneles en timesheet
 - `database/sprojects.sql` incluido en el repo (dump actualizado en cada commit)
 - **Fase 4 (Waterfall)**: vista Gantt con Frappe Gantt + dependencias vía `predecessor_id`, hitos (start==end → ♦ diamond), etiquetas por proyecto (crear/eliminar), filtro por etiqueta, vista Lista agrupada por etiqueta, drag de barras actualiza `start_date`/`due_date`, migración `tasks.start_date`
+- **Fase 5 (Scrum mejorado)**: historias de usuario (`type='story'`) en backlog con acordeón expandible, crear historia/sprint inline, `addStoryToSprint` añade historia + tareas hijas al sprint, barra de info del sprint (objetivo, fechas, velocidad en story points y tareas), iniciar/completar sprint (las tareas pendientes vuelven al backlog), tarjetas en el board muestran la historia padre, selector de proyectos corregido
 
 ### Páginas disponibles
 | Ruta | Página | Roles |
@@ -34,7 +35,6 @@
 | `/app/month-closing-admin` | Cierre de mes por proyecto | PM + super_admin |
 
 ### Pendiente 🔲
-- Fase 5: Scrum mejorado (historias de usuario expandibles, sprint planning)
 - Fase 7: Gestión de equipos e invitaciones por email
 - Fase 8: Modal detalle de tarea, dashboard de proyecto, "Mis Proyectos" con progreso
 - Fase 2b: Límites y alertas de horas diarias en timesheet
