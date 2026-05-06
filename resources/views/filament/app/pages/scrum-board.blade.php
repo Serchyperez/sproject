@@ -214,8 +214,9 @@
             {{-- Story header --}}
             <div class="flex items-start gap-2 px-3 py-2.5 cursor-pointer hover:bg-violet-50/50 dark:hover:bg-violet-900/20 transition-colors"
                  @click="open = !open">
-                <x-heroicon-o-chevron-right class="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400 transition-transform"
-                                             :class="{ 'rotate-90': open }"/>
+                <span :class="open ? 'rotate-90' : ''" class="flex-shrink-0 transition-transform inline-flex mt-0.5">
+                    <x-heroicon-o-chevron-right class="h-4 w-4 text-gray-400"/>
+                </span>
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-gray-800 dark:text-gray-100 leading-snug">{{ $story->title }}</p>
                     <div class="mt-1 flex items-center gap-2 text-xs text-gray-400">
