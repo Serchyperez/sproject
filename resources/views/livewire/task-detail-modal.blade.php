@@ -13,7 +13,8 @@
     $subtasksDone   = $task->subtasks->filter(fn ($s) => $s->status?->is_done)->count();
 @endphp
 
-<div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 px-4 py-10"
+<div class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/50 px-4 pb-10"
+     style="padding-top: 5rem"
      x-data="{ tab: 'details' }"
      @keydown.escape.window="$wire.close()">
 
@@ -25,7 +26,7 @@
          @click.stop>
 
         {{-- ── Header ─────────────────────────────────────────────── --}}
-        <div class="flex flex-wrap items-center gap-2 border-b border-gray-100 dark:border-gray-800 px-5 py-3">
+        <div class="flex flex-wrap items-center gap-2 border-b border-gray-100 dark:border-gray-800 px-6 py-4">
 
             {{-- Type --}}
             <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $typeColors[$type] ?? 'bg-gray-100 text-gray-600' }}">
@@ -66,7 +67,7 @@
         </div>
 
         {{-- ── Title ──────────────────────────────────────────────── --}}
-        <div class="px-5 pt-4 pb-2">
+        <div class="px-6 pt-5 pb-2">
             <input wire:model="title"
                    type="text"
                    class="w-full border-0 bg-transparent text-xl font-bold text-gray-900 dark:text-white placeholder-gray-300 focus:ring-0 focus:outline-none p-0"
@@ -74,7 +75,7 @@
         </div>
 
         {{-- ── Tabs ───────────────────────────────────────────────── --}}
-        <div class="flex gap-1 border-b border-gray-100 dark:border-gray-800 px-5">
+        <div class="flex gap-1 border-b border-gray-100 dark:border-gray-800 px-6">
             @php
                 $tabs = [
                     'details'  => 'Detalles',
@@ -93,12 +94,12 @@
         </div>
 
         {{-- ── Tab content ─────────────────────────────────────────── --}}
-        <div class="min-h-52 max-h-[55vh] overflow-y-auto px-5 py-4">
+        <div class="overflow-y-auto px-6 py-5" style="max-height: 55vh">
 
             {{-- Details --}}
             <div x-show="tab === 'details'" class="grid grid-cols-1 sm:grid-cols-3 gap-5">
                 {{-- Left: description + labels --}}
-                <div class="sm:col-span-2 space-y-4">
+                <div class="sm:col-span-2 space-y-4" style="padding-right:1.25rem">
                     <div>
                         <label class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-gray-400">Descripción</label>
                         <textarea wire:model="description"
@@ -121,9 +122,9 @@
                 </div>
 
                 {{-- Right: meta fields --}}
-                <div class="space-y-3">
+                <div class="space-y-5">
                     <div>
-                        <label class="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Asignado a</label>
+                        <label class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-gray-400">Asignado a</label>
                         <select wire:model="assignedTo"
                                 class="w-full rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-violet-500">
                             <option value="">Sin asignar</option>
@@ -133,7 +134,7 @@
                         </select>
                     </div>
                     <div>
-                        <label class="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Tipo</label>
+                        <label class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-gray-400">Tipo</label>
                         <select wire:model="type"
                                 class="w-full rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-violet-500">
                             @foreach ($typeLabels as $val => $label)
@@ -142,28 +143,28 @@
                         </select>
                     </div>
                     <div>
-                        <label class="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Fecha inicio</label>
+                        <label class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-gray-400">Fecha inicio</label>
                         <input wire:model="startDate" type="date"
                                class="w-full rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-violet-500"/>
                     </div>
                     <div>
-                        <label class="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Fecha fin</label>
+                        <label class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-gray-400">Fecha fin</label>
                         <input wire:model="dueDate" type="date"
                                class="w-full rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-violet-500"/>
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Story pts</label>
+                            <label class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-gray-400">Story pts</label>
                             <input wire:model="storyPoints" type="number" min="0" max="999"
                                    class="w-full rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-violet-500"/>
                         </div>
                         <div>
-                            <label class="mb-1 block text-xs font-semibold text-gray-500 dark:text-gray-400">Horas est.</label>
+                            <label class="mb-1.5 block text-xs font-semibold text-gray-500 dark:text-gray-400">Horas est.</label>
                             <input wire:model="estimatedHours" type="number" min="0" step="0.5"
                                    class="w-full rounded-lg border-gray-200 dark:border-gray-700 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-violet-500"/>
                         </div>
                     </div>
-                    <div class="space-y-1 pt-1 text-xs text-gray-400">
+                    <div class="space-y-1 pt-2 text-xs text-gray-400">
                         <p>Creada: {{ $task->created_at->locale('es')->diffForHumans() }}</p>
                         @if ($task->assignee)
                             <p>Asignada a: {{ $task->assignee->name }}</p>
@@ -301,16 +302,18 @@
         </div>
 
         {{-- ── Footer ──────────────────────────────────────────────── --}}
-        <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 px-5 py-3">
+        <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-800 px-6 py-4">
             <span class="text-xs text-gray-400">#{{ $task->id }} · {{ $project->name }}</span>
             <div class="flex gap-2">
-                <button wire:click="close"
-                        class="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-1.5 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                    Cerrar
-                </button>
                 <button wire:click="save"
-                        class="rounded-lg bg-violet-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-violet-700 transition-colors">
-                    Guardar cambios
+                        type="button"
+                        style="background-color:#7c3aed;color:#fff;padding:6px 18px;border-radius:8px;font-size:0.875rem;font-weight:500;border:none;cursor:pointer;">
+                    Actualizar
+                </button>
+                <button wire:click="close"
+                        type="button"
+                        style="background-color:transparent;color:#4b5563;padding:6px 18px;border-radius:8px;font-size:0.875rem;border:1px solid #d1d5db;cursor:pointer;">
+                    Cerrar
                 </button>
             </div>
         </div>

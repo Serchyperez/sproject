@@ -83,7 +83,9 @@ class TaskDetailModal extends Component
 
         unset($this->task);
 
-        Notification::make()->title('Tarea guardada')->success()->send();
+        Notification::make()->title('Tarea actualizada')->success()->send();
+
+        $this->close();
     }
 
     // ── Subtasks ──────────────────────────────────────────────────────
