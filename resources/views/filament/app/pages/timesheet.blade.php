@@ -157,4 +157,71 @@
             </table>
         </div>
     @endif
+
+    {{-- Month closing section (visible only to PMs and super_admin) --}}
+    @php $closingSection = $this->getClosingSection(); @endphp
+    @if (count($closingSection) > 0)
+        <div class="mt-6">
+            <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-3 flex items-center gap-2">
+                <x-heroicon-o-lock-closed class="w-4 h-4"/>
+                Cierre de mes — {{ $this->getMonthLabel() }}
+            </h3>
+            <div class="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">Proyecto</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">Estado</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">Cerrado por</th>
+                            <th class="px-4 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">Fecha</th>
+                            <th class="px-4 py-2"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        @foreach ($closingSection as $item)
+                            <tr class="bg-white dark:bg-gray-900">
+                                <td class="px-4 py-2.5 text-xs font-medium text-gray-700 dark:text-gray-300">
+                                    {{ $item['project']->name }}
+                                </td>
+                                <td class="px-4 py-2.5">
+                                    @if ($item['isClosed'])
+                                        <span class="inline-flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
+                                            <x-heroicon-s-lock-closed class="w-3.5 h-3.5"/>
+                                            Cerrado
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                                            <x-heroicon-s-lock-open class="w-3.5 h-3.5"/>
+                                            Abierto
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-2.5 text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $item['closedBy'] ?? '—' }}
+                                </td>
+                                <td class="px-4 py-2.5 text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $item['closedAt'] ?? '—' }}
+                                </td>
+                                <td class="px-4 py-2.5 text-right">
+                                    @if ($item['canClose'])
+                                        <button wire:click="closeMonth({{ $item['project']->id }})"
+                                                wire:confirm="¿Cerrar el mes de {{ $item['project']->name }}? Las imputaciones quedarán bloqueadas."
+                                                class="text-xs px-3 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200 hover:bg-red-100 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 transition-colors">
+                                            Cerrar mes
+                                        </button>
+                                    @elseif ($item['canReopen'])
+                                        <button wire:click="reopenMonth({{ $item['project']->id }})"
+                                                wire:confirm="¿Reabrir el mes de {{ $item['project']->name }}?"
+                                                class="text-xs px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800 transition-colors">
+                                            Reabrir
+                                        </button>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    @endif
 </x-filament-panels::page>

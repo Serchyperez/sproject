@@ -3,9 +3,12 @@
 namespace App\Filament\App\Pages;
 
 use App\Models\MonthClosing;
+use App\Models\Project;
+use App\Models\ProjectMember;
 use App\Models\Task;
 use App\Models\TaskImputation;
 use Carbon\Carbon;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Livewire\Attributes\Renderless;
 
@@ -54,7 +57,6 @@ class TimesheetView extends Page
 
         $days = $this->daysInMonth();
 
-        // Index imputations: taskId → [day → hours]
         $imps = TaskImputation::where('user_id', auth()->id())
             ->whereYear('date', $this->year)
             ->whereMonth('date', $this->month)
@@ -119,6 +121,12 @@ class TimesheetView extends Page
     #[Renderless]
     public function saveHours(int $taskId, string $date, float $hours): void
     {
+        $task = Task::findOrFail($taskId);
+
+        if (MonthClosing::isClosed($task->project_id, $this->year, $this->month)) {
+            return;
+        }
+
         if ($hours <= 0) {
             TaskImputation::where('task_id', $taskId)
                 ->where('user_id', auth()->id())
@@ -131,5 +139,81 @@ class TimesheetView extends Page
             ['task_id' => $taskId, 'user_id' => auth()->id(), 'date' => $date],
             ['hours' => $hours]
         );
+    }
+
+    // ── Month closing ────────────────────────────────────────────────
+
+    /** Projects the current user can close or reopen for the displayed month. */
+    public function getClosingSection(): array
+    {
+        $user        = auth()->user();
+        $isSuperAdmin = $user->hasRole('super_admin');
+
+        if ($isSuperAdmin) {
+            $projects = Project::with(['monthClosings.closedBy'])->orderBy('name')->get();
+        } else {
+            $projects = Project::where(function ($q) use ($user) {
+                $q->where('owner_id', $user->id)
+                  ->orWhereHas('projectMembers', fn ($m) =>
+                      $m->where('user_id', $user->id)->where('role', 'manager')
+                  );
+            })->with(['monthClosings.closedBy'])->orderBy('name')->get();
+        }
+
+        if ($projects->isEmpty()) {
+            return [];
+        }
+
+        return $projects->map(function (Project $project) use ($isSuperAdmin) {
+            $closing = $project->monthClosings
+                ->where('year', $this->year)
+                ->where('month', $this->month)
+                ->first();
+
+            $isClosed = $closing?->is_closed ?? false;
+
+            return [
+                'project'   => $project,
+                'isClosed'  => $isClosed,
+                'closedAt'  => $closing?->closed_at?->locale('es')->isoFormat('D MMM YYYY, HH:mm'),
+                'closedBy'  => $closing?->closedBy?->name,
+                'canClose'  => !$isClosed,
+                'canReopen' => $isSuperAdmin && $isClosed,
+            ];
+        })->toArray();
+    }
+
+    public function closeMonth(int $projectId): void
+    {
+        $user = auth()->user();
+
+        $canClose = $user->hasRole('super_admin')
+            || Project::where('id', $projectId)->where('owner_id', $user->id)->exists()
+            || ProjectMember::where('project_id', $projectId)->where('user_id', $user->id)->where('role', 'manager')->exists();
+
+        abort_unless($canClose, 403);
+
+        MonthClosing::updateOrCreate(
+            ['project_id' => $projectId, 'year' => $this->year, 'month' => $this->month],
+            ['is_closed' => true, 'closed_by' => $user->id, 'closed_at' => now()]
+        );
+
+        Notification::make()->title('Mes cerrado correctamente')->success()->send();
+    }
+
+    public function reopenMonth(int $projectId): void
+    {
+        abort_unless(auth()->user()->hasRole('super_admin'), 403);
+
+        MonthClosing::where('project_id', $projectId)
+            ->where('year', $this->year)
+            ->where('month', $this->month)
+            ->update([
+                'is_closed'   => false,
+                'reopened_by' => auth()->id(),
+                'reopened_at' => now(),
+            ]);
+
+        Notification::make()->title('Mes reabierto')->success()->send();
     }
 }
