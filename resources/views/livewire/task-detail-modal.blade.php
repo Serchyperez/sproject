@@ -1,3 +1,4 @@
+<div>
 @if ($isOpen && $this->task)
 @php
     $task     = $this->task;
@@ -317,3 +318,4 @@
     </div>
 </div>
 @endif
+</div>
