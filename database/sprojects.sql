@@ -1,3 +1,4 @@
+mysqldump: [Warning] Using a password on the command line interface can be insecure.
 -- MySQL dump 10.13  Distrib 5.7.39, for osx10.12 (x86_64)
 --
 -- Host: 127.0.0.1    Database: sprojects
@@ -258,7 +259,7 @@ CREATE TABLE `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,7 +268,7 @@ CREATE TABLE `migrations` (
 
 LOCK TABLES `migrations` WRITE;
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_05_05_101605_create_permission_tables',1),(5,'2026_05_05_101607_create_personal_access_tokens_table',1),(6,'2026_05_05_110000_create_projects_table',1),(7,'2026_05_05_110001_create_project_members_table',1),(8,'2026_05_05_110002_create_task_statuses_table',1),(9,'2026_05_05_110003_create_milestones_table',1),(10,'2026_05_05_110004_create_sprints_table',1),(11,'2026_05_05_110005_create_tasks_table',1),(12,'2026_05_05_110006_create_task_imputations_table',1),(13,'2026_05_05_110007_create_task_comments_table',1),(14,'2026_05_05_110008_create_task_attachments_table',1),(15,'2026_05_05_180302_add_allow_self_assign_to_projects_table',2),(16,'2026_05_05_180303_add_predecessor_id_to_tasks_table',2),(17,'2026_05_05_180303_create_labels_table',2),(18,'2026_05_05_180304_create_label_task_table',2),(19,'2026_05_05_180305_create_invitations_table',2),(20,'2026_05_05_180305_create_month_closings_table',2);
+INSERT INTO `migrations` VALUES (1,'0001_01_01_000000_create_users_table',1),(2,'0001_01_01_000001_create_cache_table',1),(3,'0001_01_01_000002_create_jobs_table',1),(4,'2026_05_05_101605_create_permission_tables',1),(5,'2026_05_05_101607_create_personal_access_tokens_table',1),(6,'2026_05_05_110000_create_projects_table',1),(7,'2026_05_05_110001_create_project_members_table',1),(8,'2026_05_05_110002_create_task_statuses_table',1),(9,'2026_05_05_110003_create_milestones_table',1),(10,'2026_05_05_110004_create_sprints_table',1),(11,'2026_05_05_110005_create_tasks_table',1),(12,'2026_05_05_110006_create_task_imputations_table',1),(13,'2026_05_05_110007_create_task_comments_table',1),(14,'2026_05_05_110008_create_task_attachments_table',1),(15,'2026_05_05_180302_add_allow_self_assign_to_projects_table',2),(16,'2026_05_05_180303_add_predecessor_id_to_tasks_table',2),(17,'2026_05_05_180303_create_labels_table',2),(18,'2026_05_05_180304_create_label_task_table',2),(19,'2026_05_05_180305_create_invitations_table',2),(20,'2026_05_05_180305_create_month_closings_table',2),(21,'2026_05_06_000001_add_start_date_to_tasks_table',3);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -828,6 +829,7 @@ CREATE TABLE `tasks` (
   `story_points` int(10) unsigned DEFAULT NULL,
   `estimated_hours` decimal(6,2) DEFAULT NULL,
   `due_date` date DEFAULT NULL,
+  `start_date` date DEFAULT NULL,
   `position` int(10) unsigned NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -857,7 +859,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,1,NULL,NULL,4,NULL,1,2,1,'Configurar entorno de desarrollo',NULL,'high','task',NULL,9.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,NULL,NULL,4,NULL,1,2,1,'Diseñar base de datos',NULL,'high','task',NULL,6.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:24:48'),(3,1,NULL,NULL,2,NULL,1,2,1,'Implementar autenticación',NULL,'high','task',NULL,10.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:41:53'),(4,1,NULL,NULL,1,NULL,1,2,1,'Crear panel de administración',NULL,'medium','task',NULL,9.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 18:43:30'),(5,1,NULL,NULL,1,NULL,1,2,1,'Desarrollar API REST',NULL,'medium','task',NULL,6.00,NULL,2,'2026-05-05 08:18:41','2026-05-05 18:18:00'),(6,1,NULL,NULL,2,NULL,1,2,1,'Implementar Kanban Board',NULL,'medium','task',NULL,4.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:49:50'),(7,1,NULL,NULL,2,NULL,1,2,1,'Vista Gantt',NULL,'low','task',NULL,13.00,NULL,2,'2026-05-05 08:18:41','2026-05-05 18:42:16'),(8,1,NULL,NULL,1,NULL,1,2,1,'Tests unitarios',NULL,'low','task',NULL,7.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:33:13');
+INSERT INTO `tasks` VALUES (1,1,NULL,NULL,4,NULL,1,2,1,'Configurar entorno de desarrollo',NULL,'high','task',NULL,9.00,NULL,NULL,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,NULL,NULL,4,NULL,1,2,1,'Diseñar base de datos',NULL,'high','task',NULL,6.00,NULL,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:24:48'),(3,1,NULL,NULL,2,NULL,1,2,1,'Implementar autenticación',NULL,'high','task',NULL,10.00,NULL,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:41:53'),(4,1,NULL,NULL,1,NULL,1,2,1,'Crear panel de administración',NULL,'medium','task',NULL,9.00,NULL,NULL,1,'2026-05-05 08:18:41','2026-05-05 18:43:30'),(5,1,NULL,NULL,1,NULL,1,2,1,'Desarrollar API REST',NULL,'medium','task',NULL,6.00,NULL,NULL,2,'2026-05-05 08:18:41','2026-05-05 18:18:00'),(6,1,NULL,NULL,2,NULL,1,2,1,'Implementar Kanban Board',NULL,'medium','task',NULL,4.00,NULL,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:49:50'),(7,1,NULL,NULL,2,NULL,1,2,1,'Vista Gantt',NULL,'low','task',NULL,13.00,NULL,NULL,2,'2026-05-05 08:18:41','2026-05-05 18:42:16'),(8,1,NULL,NULL,1,NULL,1,2,1,'Tests unitarios',NULL,'low','task',NULL,7.00,NULL,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:33:13');
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -904,4 +906,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-06 16:06:01
+-- Dump completed on 2026-05-06 19:43:25
