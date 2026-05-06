@@ -335,7 +335,7 @@
                              data-status="{{ $status->id }}">
                             @foreach ($sprintTasks[$status->id] ?? [] as $task)
                                 <div wire:key="t-{{ $task->id }}"
-                                     class="group cursor-grab rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm hover:shadow-md transition-shadow select-none"
+                                     class="cursor-grab rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm hover:shadow-md transition-shadow select-none"
                                      data-task="{{ $task->id }}">
                                     <div class="mb-1.5 flex items-start justify-between gap-1">
                                         @if ($task->parent)
@@ -346,7 +346,7 @@
                                             <span></span>
                                         @endif
                                         <button @click.stop="Livewire.dispatch('open-task-modal', {taskId: {{ $task->id }}})"
-                                                class="invisible group-hover:visible flex-shrink-0 rounded p-0.5 text-gray-400 hover:text-violet-600 transition-colors"
+                                                class="flex-shrink-0 rounded p-0.5 text-gray-300 hover:text-violet-600 transition-colors"
                                                 title="Ver detalle">
                                             <x-heroicon-o-arrow-top-right-on-square class="h-3.5 w-3.5"/>
                                         </button>

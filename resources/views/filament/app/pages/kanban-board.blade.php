@@ -96,7 +96,7 @@
                             <div class="kanban-column space-y-2 min-h-32 p-2 rounded-xl bg-gray-50 dark:bg-gray-800/50 {{ $wipExceeded ? 'ring-2 ring-red-300 dark:ring-red-800' : '' }}"
                                  data-status="{{ $status->id }}">
                                 @foreach($status->tasks->sortBy('position') as $task)
-                                    <div class="kanban-card group bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 cursor-grab hover:shadow-md transition-shadow"
+                                    <div class="kanban-card bg-white dark:bg-gray-800 rounded-lg p-3 shadow-sm border border-gray-200 dark:border-gray-700 cursor-grab hover:shadow-md transition-shadow"
                                          wire:key="task-{{ $task->id }}"
                                          data-task="{{ $task->id }}">
                                         <div class="flex items-start justify-between gap-2 mb-2">
@@ -107,7 +107,7 @@
                                                 {{ $task->priority === 'low' ? 'bg-gray-100 text-gray-600' : '' }}
                                             ">{{ ucfirst($task->priority) }}</span>
                                             <button @click.stop="Livewire.dispatch('open-task-modal', {taskId: {{ $task->id }}})"
-                                                    class="invisible group-hover:visible rounded p-0.5 text-gray-400 hover:text-violet-600 transition-colors"
+                                                    class="rounded p-0.5 text-gray-300 hover:text-violet-600 transition-colors"
                                                     title="Ver detalle">
                                                 <x-heroicon-o-arrow-top-right-on-square class="h-3.5 w-3.5"/>
                                             </button>
