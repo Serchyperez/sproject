@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.39, for osx10.12 (x86_64)
 --
--- Host: localhost    Database: sprojects
+-- Host: 127.0.0.1    Database: sprojects
 -- ------------------------------------------------------
 -- Server version	5.7.39
 
@@ -383,7 +383,7 @@ CREATE TABLE `month_closings` (
   CONSTRAINT `month_closings_closed_by_foreign` FOREIGN KEY (`closed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `month_closings_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE,
   CONSTRAINT `month_closings_reopened_by_foreign` FOREIGN KEY (`reopened_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -392,6 +392,7 @@ CREATE TABLE `month_closings` (
 
 LOCK TABLES `month_closings` WRITE;
 /*!40000 ALTER TABLE `month_closings` DISABLE KEYS */;
+INSERT INTO `month_closings` VALUES (1,1,2026,1,0,3,'2026-05-06 07:51:40',1,'2026-05-06 07:54:56','2026-05-06 07:51:40','2026-05-06 07:54:56'),(2,1,2026,3,1,3,'2026-05-06 08:08:50',NULL,NULL,'2026-05-06 08:08:50','2026-05-06 08:08:50');
 /*!40000 ALTER TABLE `month_closings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -633,7 +634,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('byy2uQpNsew1vxsYKhxUvQwQ0zkvTywwDotDyIxD',NULL,'127.0.0.1','curl/8.7.1','YTozOntzOjY6Il90b2tlbiI7czo0MDoibmtUZ1dZajNlekhCdTNCNjZ3UTQybXlsejN3MTlDU0VrT1ZBZEYyUCI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9sb2dpbiI7czo1OiJyb3V0ZSI7czoyMzoiZmlsYW1lbnQuYXBwLmF1dGgubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1778004331),('hugqppJ45fJNvAYFs1iidwDagDhwRBEXWAdVxBhT',3,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiWUtFVE5pQVViQ1ZERERQQ0VFTDZIck1BY1lndDUwTDRGZnNtVk4xTCI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDM6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9wcm9qZWN0LWxpc3QiO3M6NToicm91dGUiO3M6MzE6ImZpbGFtZW50LmFwcC5wYWdlcy5wcm9qZWN0LWxpc3QiO31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aTozO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjY0OiJhZjQ1MTRhYTBmOWZiNzYzMDY1MjIwOGRhMzVkYmY5MTNlMDhhNzM4MTE4MTE5OTM3YWJkM2E2NTRhYzZjM2Y4Ijt9',1778003407),('LusHLBRpl3ZqiwymQN48R5pBUzuXsCGaexFI9t5J',NULL,'127.0.0.1','curl/8.7.1','YTozOntzOjY6Il90b2tlbiI7czo0MDoiYlZBOE5PbnZSSUY3TXg0aDJldVMxb3FxNXUyTXdkZ2d2TlowbVJCRyI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC9sb2dpbiI7czo1OiJyb3V0ZSI7czoyMzoiZmlsYW1lbnQuYXBwLmF1dGgubG9naW4iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19',1777999256),('ToTD9mB0amIDisU7IyRVtT7Cm3VFyYnvUioqTv8q',1,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiRlJwRkZyRHF2U3ZUZ0ZiZGk3d1hOTlExUTZyN2wyTm1QSTdnbnhRNiI7czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2NDoiMjBiYzkxNWE2NmZiNGRlMTJkMThmNzk5MjExZDYxMGQwYTk1Zjg5NGRhZjUyZjliMzQ2ZmNhYWZhNDI4YTBiMiI7czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6MzA6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcCI7czo1OiJyb3V0ZSI7czoyODoiZmlsYW1lbnQuYXBwLnBhZ2VzLmRhc2hib2FyZCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=',1777996945);
+INSERT INTO `sessions` VALUES ('FfXa2SodH3m06t6Mml5dbgHVrPjgdG1BYHAW7kl0',2,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo1OntzOjY6Il90b2tlbiI7czo0MDoiclhLaGhQOVBIN0NxVGs4eHlyRmlOTTgxZjFYbFNkMzNnYmFCYXp6TiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6Mjp7czozOiJ1cmwiO3M6NDU6Imh0dHA6Ly9zcHJvamVjdHMudGVzdDo4ODg4L2FwcC90aW1lc2hlZXQtdmlldyI7czo1OiJyb3V0ZSI7czozMzoiZmlsYW1lbnQuYXBwLnBhZ2VzLnRpbWVzaGVldC12aWV3Ijt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MjtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2NDoiNWU2NDc1ZmMyMzZmYmVkZjRmMmI3ZDkxZGNkMjljMTlmZDAwMzhhYmE1MGMyZjI1NDM4OTY0MTUwOTU1ZWJlMSI7fQ==',1778076237);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -756,7 +757,7 @@ CREATE TABLE `task_imputations` (
   KEY `task_imputations_user_id_foreign` (`user_id`),
   CONSTRAINT `task_imputations_task_id_foreign` FOREIGN KEY (`task_id`) REFERENCES `tasks` (`id`) ON DELETE CASCADE,
   CONSTRAINT `task_imputations_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -765,6 +766,7 @@ CREATE TABLE `task_imputations` (
 
 LOCK TABLES `task_imputations` WRITE;
 /*!40000 ALTER TABLE `task_imputations` DISABLE KEYS */;
+INSERT INTO `task_imputations` VALUES (1,1,2,2.00,'2026-05-01',NULL,'2026-05-06 06:27:33','2026-05-06 06:27:48'),(2,1,2,2.00,'2026-05-02',NULL,'2026-05-06 06:27:35','2026-05-06 06:27:35'),(3,5,2,2.00,'2026-05-01',NULL,'2026-05-06 06:27:57','2026-05-06 06:27:57'),(4,4,2,2.00,'2026-05-01',NULL,'2026-05-06 06:33:17','2026-05-06 06:33:17'),(5,2,2,2.50,'2026-05-01',NULL,'2026-05-06 06:33:32','2026-05-06 06:33:32'),(6,4,2,2.00,'2026-05-02',NULL,'2026-05-06 06:35:18','2026-05-06 06:35:18'),(7,5,2,2.00,'2026-05-02',NULL,'2026-05-06 06:35:18','2026-05-06 06:35:18'),(8,2,2,2.00,'2026-05-02',NULL,'2026-05-06 06:35:18','2026-05-06 06:35:18'),(9,6,2,0.50,'2026-05-02',NULL,'2026-05-06 06:35:18','2026-05-06 06:35:18'),(10,6,2,8.50,'2026-05-03',NULL,'2026-05-06 06:35:23','2026-05-06 06:35:23'),(11,3,2,9.00,'2026-05-04',NULL,'2026-05-06 06:35:25','2026-05-06 06:35:25'),(13,3,2,5.00,'2026-01-03',NULL,'2026-05-06 07:55:42','2026-05-06 07:55:42'),(14,5,2,4.00,'2026-01-01',NULL,'2026-05-06 07:55:47','2026-05-06 07:55:47'),(15,2,2,3.00,'2026-01-01',NULL,'2026-05-06 07:55:49','2026-05-06 07:55:49');
 /*!40000 ALTER TABLE `task_imputations` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -798,7 +800,7 @@ CREATE TABLE `task_statuses` (
 
 LOCK TABLES `task_statuses` WRITE;
 /*!40000 ALTER TABLE `task_statuses` DISABLE KEYS */;
-INSERT INTO `task_statuses` VALUES (1,1,'Backlog','#6b7280',0,NULL,1,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,'En progreso','#3b82f6',1,NULL,0,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(3,1,'En revisión','#f59e0b',2,NULL,0,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(4,1,'Completado','#10b981',3,NULL,0,1,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(5,2,'To Do','#6b7280',0,NULL,1,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(6,2,'In Progress','#3b82f6',1,NULL,0,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(7,2,'Done','#10b981',2,NULL,0,1,'2026-05-05 08:18:41','2026-05-05 08:18:41');
+INSERT INTO `task_statuses` VALUES (1,1,'Not Started','#6b7280',0,NULL,1,0,'2026-05-05 08:18:41','2026-05-05 17:19:24'),(2,1,'En progreso','#3b82f6',1,NULL,0,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(3,1,'En revisión','#f59e0b',2,NULL,0,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(4,1,'Completado','#10b981',3,NULL,0,1,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(5,2,'To Do','#6b7280',0,NULL,1,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(6,2,'In Progress','#3b82f6',1,NULL,0,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(7,2,'Done','#10b981',2,NULL,0,1,'2026-05-05 08:18:41','2026-05-05 08:18:41');
 /*!40000 ALTER TABLE `task_statuses` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -855,7 +857,7 @@ CREATE TABLE `tasks` (
 
 LOCK TABLES `tasks` WRITE;
 /*!40000 ALTER TABLE `tasks` DISABLE KEYS */;
-INSERT INTO `tasks` VALUES (1,1,NULL,NULL,4,NULL,1,2,1,'Configurar entorno de desarrollo',NULL,'high','task',NULL,9.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,NULL,NULL,4,NULL,1,2,1,'Diseñar base de datos',NULL,'high','task',NULL,6.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(3,1,NULL,NULL,2,NULL,1,2,1,'Implementar autenticación',NULL,'high','task',NULL,10.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 10:12:59'),(4,1,NULL,NULL,1,NULL,1,2,1,'Crear panel de administración',NULL,'medium','task',NULL,9.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 10:13:27'),(5,1,NULL,NULL,1,NULL,1,2,1,'Desarrollar API REST',NULL,'medium','task',NULL,6.00,NULL,4,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(6,1,NULL,NULL,2,NULL,1,2,1,'Implementar Kanban Board',NULL,'medium','task',NULL,4.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 10:13:57'),(7,1,NULL,NULL,2,NULL,1,2,1,'Vista Gantt',NULL,'low','task',NULL,13.00,NULL,2,'2026-05-05 08:18:41','2026-05-05 15:48:48'),(8,1,NULL,NULL,1,NULL,1,2,1,'Tests unitarios',NULL,'low','task',NULL,7.00,NULL,7,'2026-05-05 08:18:41','2026-05-05 08:18:41');
+INSERT INTO `tasks` VALUES (1,1,NULL,NULL,4,NULL,1,2,1,'Configurar entorno de desarrollo',NULL,'high','task',NULL,9.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,NULL,NULL,4,NULL,1,2,1,'Diseñar base de datos',NULL,'high','task',NULL,6.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:24:48'),(3,1,NULL,NULL,2,NULL,1,2,1,'Implementar autenticación',NULL,'high','task',NULL,10.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:41:53'),(4,1,NULL,NULL,1,NULL,1,2,1,'Crear panel de administración',NULL,'medium','task',NULL,9.00,NULL,1,'2026-05-05 08:18:41','2026-05-05 18:43:30'),(5,1,NULL,NULL,1,NULL,1,2,1,'Desarrollar API REST',NULL,'medium','task',NULL,6.00,NULL,2,'2026-05-05 08:18:41','2026-05-05 18:18:00'),(6,1,NULL,NULL,2,NULL,1,2,1,'Implementar Kanban Board',NULL,'medium','task',NULL,4.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:49:50'),(7,1,NULL,NULL,2,NULL,1,2,1,'Vista Gantt',NULL,'low','task',NULL,13.00,NULL,2,'2026-05-05 08:18:41','2026-05-05 18:42:16'),(8,1,NULL,NULL,1,NULL,1,2,1,'Tests unitarios',NULL,'low','task',NULL,7.00,NULL,0,'2026-05-05 08:18:41','2026-05-05 18:33:13');
 /*!40000 ALTER TABLE `tasks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -889,7 +891,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Super Admin','admin@sprojects.test','2026-05-05 08:18:38','$2y$12$Yb3AeDL4G9gBRfPv8G7ZIetNssomv0Z5uhLZ7ssYjMgXWXo8IRJ3a',NULL,NULL,'UTC','C5jdxFDnvMb9LdQb5TqZAmiRTvkPlV26SyasQkoAaBPD5ptJE6hpKgyuHTt4','2026-05-05 08:18:38','2026-05-05 14:45:10'),(2,'Developer User','dev@sprojects.test','2026-05-05 08:18:40','$2y$12$uCmLXTzrJRD.ONnaWu18XO7NN7lnXrNutkV0doxv71M6Va3hk.kFG',NULL,'Full Stack Developer','UTC',NULL,'2026-05-05 08:18:40','2026-05-05 14:44:00'),(3,'Project Manager','pm@sprojects.test','2026-05-05 08:18:41','$2y$12$LudxBDqiY2zoUP6nDATOP.rvsfb8CwABRlb9NJDc4IVTtfUF5dui.',NULL,'Project Manager','UTC',NULL,'2026-05-05 08:18:41','2026-05-05 15:49:37');
+INSERT INTO `users` VALUES (1,'Super Admin','admin@sprojects.test','2026-05-05 08:18:38','$2y$12$Yb3AeDL4G9gBRfPv8G7ZIetNssomv0Z5uhLZ7ssYjMgXWXo8IRJ3a',NULL,NULL,'UTC','0HpGgH2KcuSga9X2kqP1q2qIo02YABhcgHxaurPehohMgh6ddPeReTU82Lah','2026-05-05 08:18:38','2026-05-05 14:45:10'),(2,'Developer User','dev@sprojects.test','2026-05-05 08:18:40','$2y$12$uCmLXTzrJRD.ONnaWu18XO7NN7lnXrNutkV0doxv71M6Va3hk.kFG',NULL,'Full Stack Developer','UTC',NULL,'2026-05-05 08:18:40','2026-05-05 14:44:00'),(3,'Project Manager','pm@sprojects.test','2026-05-05 08:18:41','$2y$12$LudxBDqiY2zoUP6nDATOP.rvsfb8CwABRlb9NJDc4IVTtfUF5dui.',NULL,'Project Manager','UTC',NULL,'2026-05-05 08:18:41','2026-05-05 15:49:37');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -902,4 +904,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-05 20:05:54
+-- Dump completed on 2026-05-06 16:06:01

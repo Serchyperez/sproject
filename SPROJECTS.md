@@ -1,32 +1,43 @@
 # SProjects — Project Management App (JIRA-like)
 
-## Estado actual del proyecto (última actualización: 2026-05-05 — specs funcionales añadidas)
+## Estado actual del proyecto (última actualización: 2026-05-06)
 
 ### Completado ✅
 - Instalación completa: Laravel 12 + Filament 3.3 + Spatie Permissions + Sanctum
-- Base de datos: 14 migraciones ejecutadas, seeders funcionando
-- **Panel unificado `/app`**: usuarios normales ven 5 páginas de trabajo; admins ven además sección "Administración"
-- Páginas de trabajo (todos los usuarios): ProjectList, KanbanBoard, ScrumBoard, GanttView, WaterfallView
-- Sección Administración (solo admin/super_admin): UserResource, ProjectResource, TaskResource, SprintResource, MilestoneResource, ImputationResource
+- Base de datos: migraciones ejecutadas, seeders con datos demo
+- **Panel unificado `/app`**: usuarios normales ven páginas de trabajo; admins ven además sección "Administración"
 - Panel `/admin` eliminado — login único en `http://sprojects.test:8888/app/login`
-- Control de acceso por recurso: `canViewAny()` (403 si acceso directo por URL) + `shouldRegisterNavigation()` (oculta nav)
-- Drag & drop: SortableJS integrado en Kanban y Scrum
+- Control de acceso por recurso: `canViewAny()` + `shouldRegisterNavigation()` por rol
+- Drag & drop: SortableJS integrado
 - Gantt: Frappe Gantt integrado (usando `dist/frappe-gantt.js`)
 - REST API: 29 endpoints bajo `/api/v1/` con autenticación Sanctum
 - Roles y permisos: 6 roles, 22 permisos, seeders con datos demo
 - Virtual host MAMP: `sprojects.test:8888` apuntando a `public/`
-- Header negro: `.fi-sidebar-header` (sidebar) y `.fi-topbar > nav` (topbar) con texto blanco
-- Avatar usuario: `filter: invert(1)` → fondo blanco, texto negro
+- Header negro: `.fi-sidebar-header` + `.fi-topbar > nav` con texto blanco
+- Avatar usuario: `filter: invert(1)`
+- **Fase 1 (BD)**: migraciones `month_closings`, `labels`, `label_task`, `invitations`, `tasks.predecessor_id`, `projects.allow_self_assign`
+- **Fase 6 (Kanban)**: backlog toggle, WIP limits, drag & drop completo con SortableJS, Escape cancela drag, Ctrl+Z deshace último movimiento, highlight de zona de drop
+- **Fase 2 (Timesheet)**: grid mensual editable con `contenteditable`, navegación por teclado (flechas, Tab, Enter), guardado automático on-blur, totales reactivos Alpine, navegación de mes, indicador de mes cerrado, descarga CSV y Excel
+- **Fase 3 (Cierre de mes)**: `closeMonth` / `reopenMonth` con guards por rol, sección de cierre en timesheet (PM/super_admin), página de administración `/app/month-closing-admin` con grid anual por proyecto, scroll layout de dos paneles en timesheet
 - `database/sprojects.sql` incluido en el repo (dump actualizado en cada commit)
 
-### Pendiente / Por verificar 🔲
-- Confirmar visualmente que el header negro funciona correctamente (sidebar + topbar + avatar)
-- ~~Verificar que `dev@sprojects.test` NO ve la sección Administración en el sidebar~~ ✅
-- ~~Verificar que `admin@sprojects.test` SÍ ve la sección Administración~~ ✅
-- Probar drag & drop en Kanban y Scrum en el navegador
-- Probar vista Gantt con tareas con fechas
-- Probar vista Waterfall
-- Probar REST API con cliente HTTP (login → token → GET /projects)
+### Páginas disponibles
+| Ruta | Página | Roles |
+|---|---|---|
+| `/app/project-list` | Lista de proyectos | Todos |
+| `/app/kanban-board` | Kanban con backlog y WIP | Todos |
+| `/app/scrum-board` | Scrum board | Todos |
+| `/app/gantt-view` | Gantt (Frappe) | Todos |
+| `/app/waterfall-view` | Waterfall | Todos |
+| `/app/timesheet-view` | Imputaciones de horas | Todos |
+| `/app/month-closing-admin` | Cierre de mes por proyecto | PM + super_admin |
+
+### Pendiente 🔲
+- Fase 4: Waterfall (Gantt con dependencias, hitos, etiquetas)
+- Fase 5: Scrum mejorado (historias de usuario expandibles, sprint planning)
+- Fase 7: Gestión de equipos e invitaciones por email
+- Fase 8: Modal detalle de tarea, dashboard de proyecto, "Mis Proyectos" con progreso
+- Fase 2b: Límites y alertas de horas diarias en timesheet
 
 ### Arquitectura de paneles
 - **Un solo panel**: `/app` para todos los usuarios
@@ -358,24 +369,23 @@ npm run build
 - [x] Actualizar modelo `Task`: `predecessor_id` en fillable, relaciones `predecessor/successors/labels`, scope `selfAssignable(User)`
 - [ ] Política de acceso: PM solo gestiona sus proyectos; SA ve todos sin ser miembro *(se implementará en Fase 7)*
 
-#### Fase 2 — Timesheet (imputaciones en grid)
-- Vista: tabla con filas=(proyecto, tarea, subtarea) y columnas=días del mes
-- Celdas editables con horas (decimal). Navegación por teclado con flechas ←→↑↓
-- Enter baja celda, Tab avanza derecha. Guardado automático al salir de celda (Livewire)
-- Totales por fila y por columna. Solo mes en curso es editable
-- Selector de mes para consultar meses cerrados (read-only, fondo gris)
-- [ ] Nueva página Livewire: `TimesheetView.php`
-- [ ] Blade: tabla editable con Alpine.js para navegación por teclado
-- [ ] Lógica: cargar tareas asignadas × días del mes
-- [ ] Lógica: save/update `task_imputations` en blur de celda
-- [ ] Totales y bloqueo por `month_closings`
+#### Fase 2 — Timesheet (imputaciones en grid) ✅
+- [x] `TimesheetView.php` + `timesheet.blade.php`
+- [x] Grid mensual: panel izquierdo fijo (Proyecto/Tarea/Subtarea) + panel derecho scrollable (días)
+- [x] Celdas `contenteditable` con validación numérica (solo dígitos + decimal)
+- [x] Navegación por teclado: flechas ←→↑↓, Tab/Shift+Tab, Enter
+- [x] Guardado automático on-blur via `#[Renderless] saveHours()`
+- [x] Totales reactivos Alpine (por fila y por día), `wire:key` evita estado stale al cambiar mes
+- [x] Navegación prev/next mes, indicador 🔒 cuando el mes está cerrado
+- [x] Celdas read-only (fondo gris) en meses cerrados
+- [x] Descarga CSV (PHP nativo, UTF-8 BOM) y Excel (HTML-as-XLS, sin dependencias)
+- [ ] **Fase 2b**: límites y alertas de horas diarias (pendiente)
 
-#### Fase 3 — Cierre de mes
-- PM del proyecto: cierra mes vencido (anterior al actual) → entradas bloqueadas
-- Super_admin: cierra Y reabre cualquier mes de cualquier proyecto
-- [ ] Botón "Cerrar mes" en timesheet (solo PM)
-- [ ] Lógica `closeMonth()` / `reopenMonth()` en Livewire
-- [ ] Vista en Administración: estado de cierre por proyecto/mes
+#### Fase 3 — Cierre de mes ✅
+- [x] `closeMonth()` / `reopenMonth()` con guards: PM/owner/super_admin para cerrar, solo super_admin para reabrir
+- [x] `saveHours()` protegido server-side contra meses cerrados
+- [x] Sección "Cierre de mes" en timesheet: estado por proyecto + botones con `wire:confirm`
+- [x] Página `/app/month-closing-admin`: grid anual (proyectos × 12 meses), iconos candado, botones inline
 
 #### Fase 4 — Waterfall
 - Tareas con `start_date` + `end_date`. Si start==end → hito (diamante en Gantt)
