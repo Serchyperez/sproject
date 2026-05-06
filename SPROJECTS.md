@@ -1,6 +1,6 @@
 # SProjects — Project Management App (JIRA-like)
 
-## Estado actual del proyecto (última actualización: 2026-05-06 — Fase 7)
+## Estado actual del proyecto (última actualización: 2026-05-06 — Fase 8.1)
 
 ### Completado ✅
 - Instalación completa: Laravel 12 + Filament 3.3 + Spatie Permissions + Sanctum
@@ -37,6 +37,8 @@
 | `/invitation/{token}` | Aceptar invitación (web, fuera de Filament) | Público |
 
 - **Fase 7 (Equipos e invitaciones)**: página `/app/team-management` (PM/super_admin) con listado de miembros, cambio de rol inline, eliminar miembro, búsqueda de usuarios existentes para añadir, invitación por email (`InvitationMail` + `Invitation` model), flujo de aceptación en `/invitation/{token}` (auto-acepta si el usuario existe, formulario de registro si no). Notificación con URL en modo `log` para desarrollo.
+
+- **Fase 8.1 (Modal detalle de tarea)**: componente Livewire `TaskDetailModal` reutilizable — 4 tabs (Detalles, Subtareas, Comentarios, Tiempo), edición inline de título/descripción/prioridad/estado/assignee/fechas/SP/horas, subtareas con toggle de completado y progreso, comentarios con borrado propio, imputaciones read-only con total. Disparado con `Livewire.dispatch('open-task-modal', {taskId})`. Integrado en KanbanBoard y ScrumBoard (botón ↗ hover en tarjetas).
 
 ### Pendiente 🔲
 - Fase 8: Modal detalle de tarea, dashboard de proyecto, "Mis Proyectos" con progreso

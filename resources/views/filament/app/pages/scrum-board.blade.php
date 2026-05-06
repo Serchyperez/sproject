@@ -335,14 +335,22 @@
                              data-status="{{ $status->id }}">
                             @foreach ($sprintTasks[$status->id] ?? [] as $task)
                                 <div wire:key="t-{{ $task->id }}"
-                                     class="cursor-grab rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm hover:shadow-md transition-shadow select-none"
+                                     class="group cursor-grab rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm hover:shadow-md transition-shadow select-none"
                                      data-task="{{ $task->id }}">
-                                    {{-- Parent story label --}}
-                                    @if ($task->parent)
-                                        <span class="mb-1.5 inline-block rounded bg-violet-50 dark:bg-violet-900/30 px-1.5 py-0.5 text-[10px] font-medium text-violet-600 dark:text-violet-300">
-                                            {{ Str::limit($task->parent->title, 28) }}
-                                        </span>
-                                    @endif
+                                    <div class="mb-1.5 flex items-start justify-between gap-1">
+                                        @if ($task->parent)
+                                            <span class="inline-block rounded bg-violet-50 dark:bg-violet-900/30 px-1.5 py-0.5 text-[10px] font-medium text-violet-600 dark:text-violet-300">
+                                                {{ Str::limit($task->parent->title, 28) }}
+                                            </span>
+                                        @else
+                                            <span></span>
+                                        @endif
+                                        <button @click.stop="Livewire.dispatch('open-task-modal', {taskId: {{ $task->id }}})"
+                                                class="invisible group-hover:visible flex-shrink-0 rounded p-0.5 text-gray-400 hover:text-violet-600 transition-colors"
+                                                title="Ver detalle">
+                                            <x-heroicon-o-arrow-top-right-on-square class="h-3.5 w-3.5"/>
+                                        </button>
+                                    </div>
                                     <p class="text-sm font-medium leading-snug text-gray-800 dark:text-gray-100">{{ $task->title }}</p>
                                     <div class="mt-2 flex items-center justify-between">
                                         <div class="flex items-center gap-1.5">
@@ -379,6 +387,8 @@
 </div>{{-- /main grid --}}
 
 @endif{{-- /project --}}
+
+    <livewire:task-detail-modal />
 
     @script
     <script>
