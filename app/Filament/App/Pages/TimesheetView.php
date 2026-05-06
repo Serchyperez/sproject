@@ -118,6 +118,97 @@ class TimesheetView extends Page
             && $day === now()->day;
     }
 
+    // ── Downloads ────────────────────────────────────────────────────
+
+    public function downloadCsv(): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $rows   = $this->getRows();
+        $days   = $this->daysInMonth();
+        $totals = $this->getDayTotals();
+        $label  = Carbon::create($this->year, $this->month)->format('Y-m');
+
+        return response()->streamDownload(function () use ($rows, $days, $totals) {
+            $out = fopen('php://output', 'w');
+            fputs($out, "\xEF\xBB\xBF"); // UTF-8 BOM for Excel compatibility
+
+            $header = ['Proyecto', 'Tarea', 'Subtarea'];
+            for ($d = 1; $d <= $days; $d++) {
+                $header[] = (string) $d;
+            }
+            $header[] = 'Total';
+            fputcsv($out, $header);
+
+            foreach ($rows as $row) {
+                $task = $row['task'];
+                $line = [
+                    $task->project->name,
+                    $task->parent ? $task->parent->title : $task->title,
+                    $task->parent ? $task->title : '',
+                ];
+                for ($d = 1; $d <= $days; $d++) {
+                    $line[] = $row['days'][$d] > 0 ? $row['days'][$d] : '';
+                }
+                $line[] = $row['rowTotal'] > 0 ? $row['rowTotal'] : '';
+                fputcsv($out, $line);
+            }
+
+            $totalsLine = ['Total día', '', ''];
+            for ($d = 1; $d <= $days; $d++) {
+                $totalsLine[] = $totals[$d] > 0 ? $totals[$d] : '';
+            }
+            $totalsLine[] = array_sum($totals) > 0 ? array_sum($totals) : '';
+            fputcsv($out, $totalsLine);
+
+            fclose($out);
+        }, "timesheet-{$label}.csv", ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
+    public function downloadExcel(): \Symfony\Component\HttpFoundation\StreamedResponse
+    {
+        $rows   = $this->getRows();
+        $days   = $this->daysInMonth();
+        $totals = $this->getDayTotals();
+        $label  = Carbon::create($this->year, $this->month)->format('Y-m');
+
+        return response()->streamDownload(function () use ($rows, $days, $totals) {
+            echo "<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body>\n";
+            echo "<table border='1' cellspacing='0' cellpadding='4'>\n";
+
+            echo "<thead><tr style='background:#f3f4f6;font-weight:bold'>";
+            echo "<td>Proyecto</td><td>Tarea</td><td>Subtarea</td>";
+            for ($d = 1; $d <= $days; $d++) {
+                echo "<td style='text-align:center'>{$d}</td>";
+            }
+            echo "<td style='text-align:center'>Total</td>";
+            echo "</tr></thead>\n<tbody>\n";
+
+            foreach ($rows as $row) {
+                $task    = $row['task'];
+                $project = htmlspecialchars($task->project->name, ENT_QUOTES);
+                $tarea   = htmlspecialchars($task->parent ? $task->parent->title : $task->title, ENT_QUOTES);
+                $subtask = htmlspecialchars($task->parent ? $task->title : '', ENT_QUOTES);
+                echo "<tr><td>{$project}</td><td>{$tarea}</td><td>{$subtask}</td>";
+                for ($d = 1; $d <= $days; $d++) {
+                    $h = $row['days'][$d] > 0 ? $row['days'][$d] : '';
+                    echo "<td style='text-align:center'>{$h}</td>";
+                }
+                $rt = $row['rowTotal'] > 0 ? $row['rowTotal'] : '';
+                echo "<td style='text-align:center;font-weight:bold'>{$rt}</td></tr>\n";
+            }
+
+            echo "</tbody>\n<tfoot>\n";
+            echo "<tr style='background:#f3f4f6;font-weight:bold'>";
+            echo "<td>Total día</td><td></td><td></td>";
+            for ($d = 1; $d <= $days; $d++) {
+                $t = $totals[$d] > 0 ? $totals[$d] : '';
+                echo "<td style='text-align:center'>{$t}</td>";
+            }
+            $grand = array_sum($totals);
+            echo "<td style='text-align:center;color:#7c3aed'>" . ($grand > 0 ? $grand : '') . "</td>";
+            echo "</tr>\n</tfoot>\n</table>\n</body></html>";
+        }, "timesheet-{$label}.xls", ['Content-Type' => 'application/vnd.ms-excel; charset=UTF-8']);
+    }
+
     #[Renderless]
     public function saveHours(int $taskId, string $date, float $hours): void
     {

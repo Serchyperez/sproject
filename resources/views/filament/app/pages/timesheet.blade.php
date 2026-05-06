@@ -1,26 +1,57 @@
 <x-filament-panels::page>
-    {{-- Month navigation --}}
+    @php
+        $rows         = $this->getRows();
+        $days         = $this->daysInMonth();
+        $dayTotals    = $this->getDayTotals();
+        $totalRows    = count($rows);
+        $cellData     = array_values(array_map(fn($row) => $row['days'], $rows));
+        $anyRowClosed = collect($rows)->contains('closed', true);
+    @endphp
+
+    {{-- Month navigation + download buttons --}}
     <div class="mb-4 flex items-center gap-3">
         <button wire:click="previousMonth"
                 class="p-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
             <x-heroicon-o-chevron-left class="w-4 h-4"/>
         </button>
-        <span class="font-semibold text-sm text-gray-700 dark:text-gray-200 capitalize min-w-[8rem] text-center">
+        <span class="font-semibold text-sm text-gray-700 dark:text-gray-200 capitalize min-w-[8rem] text-center flex items-center gap-1.5">
             {{ $this->getMonthLabel() }}
+            @if ($anyRowClosed)
+                <x-heroicon-s-lock-closed class="w-3.5 h-3.5 text-gray-400 dark:text-gray-500 flex-shrink-0"
+                    title="Mes cerrado"/>
+            @endif
         </span>
         <button wire:click="nextMonth"
                 class="p-1.5 rounded-lg border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
             <x-heroicon-o-chevron-right class="w-4 h-4"/>
         </button>
-    </div>
 
-    @php
-        $rows      = $this->getRows();
-        $days      = $this->daysInMonth();
-        $dayTotals = $this->getDayTotals();
-        $totalRows = count($rows);
-        $cellData  = array_values(array_map(fn($row) => $row['days'], $rows));
-    @endphp
+        @if ($totalRows > 0)
+            <div class="ml-auto flex items-center gap-2">
+                <button wire:click="downloadCsv"
+                        wire:loading.attr="disabled"
+                        wire:target="downloadCsv"
+                        class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600
+                               text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800
+                               disabled:opacity-50 transition-colors">
+                    <x-heroicon-o-arrow-down-tray class="w-3.5 h-3.5"/>
+                    <span wire:loading.remove wire:target="downloadCsv">CSV</span>
+                    <span wire:loading wire:target="downloadCsv">...</span>
+                </button>
+                <button wire:click="downloadExcel"
+                        wire:loading.attr="disabled"
+                        wire:target="downloadExcel"
+                        class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border border-emerald-300 dark:border-emerald-700
+                               text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20
+                               hover:bg-emerald-100 dark:hover:bg-emerald-900/40
+                               disabled:opacity-50 transition-colors">
+                    <x-heroicon-o-arrow-down-tray class="w-3.5 h-3.5"/>
+                    <span wire:loading.remove wire:target="downloadExcel">Excel</span>
+                    <span wire:loading wire:target="downloadExcel">...</span>
+                </button>
+            </div>
+        @endif
+    </div>
 
     @if ($totalRows === 0)
         <div class="text-center py-16 text-gray-500">
@@ -28,7 +59,10 @@
             <p>No tienes tareas asignadas este mes.</p>
         </div>
     @else
-        <div class="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-700"
+        {{-- Two-panel layout: fixed left labels + scrollable day grid.
+             wire:key forces Alpine to reinitialize cells on month change. --}}
+        <div class="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+             wire:key="timesheet-{{ $year }}-{{ $month }}"
              x-data="{
                 cells: {{ \Illuminate\Support\Js::from($cellData) }},
                 fmt(v) {
@@ -75,86 +109,110 @@
                     document.getElementById('cell-' + rowIdx + '-' + day)?.focus();
                 }
              }">
-            <table class="border-collapse text-sm w-full">
-                <thead>
-                    <tr class="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
-                        <th class="sticky left-0 z-20 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 min-w-[8rem]">Proyecto</th>
-                        <th class="sticky left-32 z-20 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 min-w-[10rem]">Tarea</th>
-                        <th class="sticky left-[18rem] z-20 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 min-w-[8rem] border-r border-gray-200 dark:border-gray-600">Subtarea</th>
-                        @for ($d = 1; $d <= $days; $d++)
-                            <th class="px-0 py-2 text-center text-xs font-semibold w-10
-                                {{ $this->isWeekend($d) ? 'bg-gray-100 dark:bg-gray-700/60 text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-300' }}
-                                {{ $this->isToday($d) ? 'ring-2 ring-inset ring-violet-400 dark:ring-violet-600 text-violet-600 dark:text-violet-400' : '' }}">
-                                {{ $d }}
-                            </th>
-                        @endfor
-                        <th class="px-2 py-2 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 min-w-[3.5rem] border-l border-gray-200 dark:border-gray-600">Total</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
-                    @foreach ($rows as $rowIdx => $row)
-                        @php $task = $row['task']; $closed = $row['closed']; @endphp
-                        <tr>
-                            <td class="sticky left-0 z-10 bg-white dark:bg-gray-900 px-3 py-1 text-xs text-gray-700 dark:text-gray-300 min-w-[8rem] max-w-[8rem] truncate">
-                                {{ $task->project->name }}
-                            </td>
-                            <td class="sticky left-32 z-10 bg-white dark:bg-gray-900 px-3 py-1 text-xs text-gray-700 dark:text-gray-300 min-w-[10rem] max-w-[10rem] truncate">
-                                {{ $task->parent ? $task->parent->title : $task->title }}
-                            </td>
-                            <td class="sticky left-[18rem] z-10 bg-white dark:bg-gray-900 px-3 py-1 text-xs text-gray-500 dark:text-gray-400 min-w-[8rem] max-w-[8rem] truncate border-r border-gray-100 dark:border-gray-800">
-                                {{ $task->parent ? $task->title : '—' }}
-                            </td>
-                            @for ($d = 1; $d <= $days; $d++)
-                                @php $dateStr = sprintf('%04d-%02d-%02d', $year, $month, $d); @endphp
-                                <td class="p-0 text-center w-10
-                                    {{ $this->isWeekend($d) ? 'bg-gray-50 dark:bg-gray-800/40' : '' }}
-                                    {{ $this->isToday($d) ? 'ring-2 ring-inset ring-violet-200 dark:ring-violet-800/60' : '' }}">
-                                    @if ($closed)
-                                        <div class="w-10 h-8 leading-8 text-center text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800">
-                                            {{ $row['days'][$d] ?: '' }}
-                                        </div>
-                                    @else
-                                        <div
-                                            id="cell-{{ $rowIdx }}-{{ $d }}"
-                                            contenteditable="true"
-                                            tabindex="0"
-                                            @focus="selectAll($el)"
-                                            @blur="onBlur({{ $rowIdx }}, {{ $task->id }}, {{ $d }}, '{{ $dateStr }}', $el.innerText)"
-                                            @keydown.tab.prevent="$event.shiftKey ? focusCell({{ $rowIdx }}, {{ $d - 1 }}) : focusCell({{ $rowIdx }}, {{ $d + 1 }})"
-                                            @keydown.enter.prevent="focusCell({{ $rowIdx + 1 }}, {{ $d }})"
-                                            @keydown.arrow-up.prevent="focusCell({{ $rowIdx - 1 }}, {{ $d }})"
-                                            @keydown.arrow-down.prevent="focusCell({{ $rowIdx + 1 }}, {{ $d }})"
-                                            @keydown.arrow-left.prevent="focusCell({{ $rowIdx }}, {{ $d - 1 }})"
-                                            @keydown.arrow-right.prevent="focusCell({{ $rowIdx }}, {{ $d + 1 }})"
-                                            @keydown="validateInput($event)"
-                                            class="w-10 h-8 leading-8 text-center text-xs
-                                                   focus:bg-violet-50 dark:focus:bg-violet-900/20
-                                                   focus:ring-1 focus:ring-inset focus:ring-violet-400 dark:focus:ring-violet-500
-                                                   focus:outline-none cursor-default focus:cursor-text"
-                                        >{{ $row['days'][$d] ?: '' }}</div>
-                                    @endif
-                                </td>
-                            @endfor
-                            <td class="px-2 py-1 text-center text-xs font-semibold text-gray-700 dark:text-gray-200 border-l border-gray-100 dark:border-gray-800 min-w-[3.5rem]"
-                                x-text="rowTotal({{ $rowIdx }})"></td>
+
+            {{-- ── Left panel: Proyecto / Tarea / Subtarea (fixed, never scrolls) ── --}}
+            <div class="flex-shrink-0 border-r border-gray-200 dark:border-gray-700">
+                <table class="table-fixed border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+                            <th class="h-9 w-32 px-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">Proyecto</th>
+                            <th class="h-9 w-44 px-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">Tarea</th>
+                            <th class="h-9 w-32 px-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300">Subtarea</th>
                         </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr class="border-t-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/60">
-                        <td class="sticky left-0 z-10 bg-gray-50 dark:bg-gray-800 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-300">Total día</td>
-                        <td class="sticky left-32 z-10 bg-gray-50 dark:bg-gray-800"></td>
-                        <td class="sticky left-[18rem] z-10 bg-gray-50 dark:bg-gray-800 border-r border-gray-200 dark:border-gray-600"></td>
-                        @for ($d = 1; $d <= $days; $d++)
-                            <td class="p-0 w-10 text-center text-xs font-semibold text-gray-700 dark:text-gray-200
-                                {{ $this->isWeekend($d) ? 'bg-gray-100 dark:bg-gray-700/60' : '' }}"
-                                x-text="dayTotal({{ $d }})"></td>
-                        @endfor
-                        <td class="px-2 py-2 text-center text-xs font-bold text-violet-600 dark:text-violet-400 border-l border-gray-200 dark:border-gray-600"
-                            x-text="grandTotal()"></td>
-                    </tr>
-                </tfoot>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        @foreach ($rows as $row)
+                            @php $task = $row['task']; @endphp
+                            <tr>
+                                <td class="h-8 w-32 px-3 text-xs text-gray-700 dark:text-gray-300 truncate max-w-[8rem]">
+                                    {{ $task->project->name }}
+                                </td>
+                                <td class="h-8 w-44 px-3 text-xs text-gray-700 dark:text-gray-300 truncate max-w-[11rem]">
+                                    {{ $task->parent ? $task->parent->title : $task->title }}
+                                </td>
+                                <td class="h-8 w-32 px-3 text-xs text-gray-500 dark:text-gray-400 truncate max-w-[8rem]">
+                                    {{ $task->parent ? $task->title : '—' }}
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/60">
+                            <td class="h-9 px-3 text-xs font-semibold text-gray-600 dark:text-gray-300" colspan="3">Total día</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            {{-- ── Right panel: day grid + Total column (horizontally scrollable) ── --}}
+            <div class="overflow-x-auto flex-1">
+                <table class="table-fixed border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+                            @for ($d = 1; $d <= $days; $d++)
+                                <th class="h-9 w-10 text-center text-xs font-semibold
+                                    {{ $this->isWeekend($d) ? 'bg-gray-100 dark:bg-gray-700/60 text-gray-400 dark:text-gray-500' : 'text-gray-600 dark:text-gray-300' }}
+                                    {{ $this->isToday($d) ? 'ring-2 ring-inset ring-violet-400 dark:ring-violet-600 text-violet-600 dark:text-violet-400' : '' }}">
+                                    {{ $d }}
+                                </th>
+                            @endfor
+                            <th class="h-9 w-14 text-center text-xs font-semibold text-gray-600 dark:text-gray-300 border-l border-gray-200 dark:border-gray-600">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                        @foreach ($rows as $rowIdx => $row)
+                            @php $task = $row['task']; $closed = $row['closed']; @endphp
+                            <tr>
+                                @for ($d = 1; $d <= $days; $d++)
+                                    @php $dateStr = sprintf('%04d-%02d-%02d', $year, $month, $d); @endphp
+                                    <td class="p-0 w-10 h-8
+                                        {{ $this->isWeekend($d) ? 'bg-gray-50 dark:bg-gray-800/40' : '' }}
+                                        {{ $this->isToday($d) ? 'ring-2 ring-inset ring-violet-200 dark:ring-violet-800/60' : '' }}">
+                                        @if ($closed)
+                                            <div class="w-10 h-8 leading-8 text-center text-xs text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800">
+                                                {{ $row['days'][$d] ?: '' }}
+                                            </div>
+                                        @else
+                                            <div
+                                                id="cell-{{ $rowIdx }}-{{ $d }}"
+                                                contenteditable="true"
+                                                tabindex="0"
+                                                @focus="selectAll($el)"
+                                                @blur="onBlur({{ $rowIdx }}, {{ $task->id }}, {{ $d }}, '{{ $dateStr }}', $el.innerText)"
+                                                @keydown.tab.prevent="$event.shiftKey ? focusCell({{ $rowIdx }}, {{ $d - 1 }}) : focusCell({{ $rowIdx }}, {{ $d + 1 }})"
+                                                @keydown.enter.prevent="focusCell({{ $rowIdx + 1 }}, {{ $d }})"
+                                                @keydown.arrow-up.prevent="focusCell({{ $rowIdx - 1 }}, {{ $d }})"
+                                                @keydown.arrow-down.prevent="focusCell({{ $rowIdx + 1 }}, {{ $d }})"
+                                                @keydown.arrow-left.prevent="focusCell({{ $rowIdx }}, {{ $d - 1 }})"
+                                                @keydown.arrow-right.prevent="focusCell({{ $rowIdx }}, {{ $d + 1 }})"
+                                                @keydown="validateInput($event)"
+                                                class="w-10 h-8 leading-8 text-center text-xs
+                                                       focus:bg-violet-50 dark:focus:bg-violet-900/20
+                                                       focus:ring-1 focus:ring-inset focus:ring-violet-400 dark:focus:ring-violet-500
+                                                       focus:outline-none cursor-default focus:cursor-text"
+                                            >{{ $row['days'][$d] ?: '' }}</div>
+                                        @endif
+                                    </td>
+                                @endfor
+                                <td class="w-14 h-8 text-center text-xs font-semibold text-gray-700 dark:text-gray-200 border-l border-gray-100 dark:border-gray-800"
+                                    x-text="rowTotal({{ $rowIdx }})"></td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                    <tfoot>
+                        <tr class="border-t-2 border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/60">
+                            @for ($d = 1; $d <= $days; $d++)
+                                <td class="p-0 w-10 h-9 text-center text-xs font-semibold text-gray-700 dark:text-gray-200
+                                    {{ $this->isWeekend($d) ? 'bg-gray-100 dark:bg-gray-700/60' : '' }}"
+                                    x-text="dayTotal({{ $d }})"></td>
+                            @endfor
+                            <td class="w-14 h-9 text-center text-xs font-bold text-violet-600 dark:text-violet-400 border-l border-gray-200 dark:border-gray-600"
+                                x-text="grandTotal()"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
         </div>
     @endif
 
