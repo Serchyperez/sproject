@@ -541,7 +541,7 @@ CREATE TABLE `projects` (
   UNIQUE KEY `projects_slug_unique` (`slug`),
   KEY `projects_owner_id_foreign` (`owner_id`),
   CONSTRAINT `projects_owner_id_foreign` FOREIGN KEY (`owner_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -550,7 +550,7 @@ CREATE TABLE `projects` (
 
 LOCK TABLES `projects` WRITE;
 /*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-INSERT INTO `projects` VALUES (1,1,'Demo Kanban Project','demo-kanban','Proyecto de demostración con metodología Kanban','kanban','active','#6366f1',NULL,0,'2026-05-05','2026-08-05','2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,'Demo Scrum Project','demo-scrum','Proyecto de demostración con metodología Scrum','scrum','active','#8b5cf6',NULL,0,'2026-05-05','2026-11-05','2026-05-05 08:18:41','2026-05-05 08:18:41');
+INSERT INTO `projects` VALUES (1,1,'Demo Kanban Project','demo-kanban','Proyecto de demostración con metodología Kanban','kanban','active','#6366f1',NULL,0,'2026-05-05','2026-08-05','2026-05-05 08:18:41','2026-05-05 08:18:41'),(2,1,'Demo Scrum Project','demo-scrum','Proyecto de demostración con metodología Scrum','scrum','active','#8b5cf6',NULL,0,'2026-05-05','2026-11-05','2026-05-05 08:18:41','2026-05-05 08:18:41'),(3,3,'SPEditions','speditions','Proyecto de creación de la tienda online para libros SPEditions','kanban','active','#076bf0',NULL,0,'2026-05-02','2026-07-31','2026-05-07 09:17:25','2026-05-07 09:17:25');
 /*!40000 ALTER TABLE `projects` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -635,7 +635,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('bM6jEpbN6KlOmFgtSSIee2xx0cMxex7qQrF8TMGW',1,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo2OntzOjY6Il90b2tlbiI7czo0MDoiOExmczMxd1ZpNFFrbUJBM3NmMHRPQVdZWEh2WFNmWkZlT1pWSFMxVyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQzOiJodHRwOi8vc3Byb2plY3RzLnRlc3Q6ODg4OC9hcHAva2FuYmFuLWJvYXJkIjtzOjU6InJvdXRlIjtzOjMxOiJmaWxhbWVudC5hcHAucGFnZXMua2FuYmFuLWJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2NDoiNDg5ZDNiNzY0YTllNzllNDNiYTYxNGE0M2YwM2VmNmJmYTAwZWNlMTc1ZWRkNDlmMDIxZTQ3YTQ3ZGEyOTVjNSI7fQ==',1778149788),('VOXBulsdCsdw3FkEhaI14rzj3sEB8a2gMPQbZTqq',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTnN2UWc1eDI0QTRWaWRTZFdXMjNNb1pvREcwbkVTNjlFSHdKYUxJYiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MzoiaHR0cDovL3Nwcm9qZWN0cy50ZXN0Ojg4ODgvYXBwL2thbmJhbi1ib2FyZCI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQzOiJodHRwOi8vc3Byb2plY3RzLnRlc3Q6ODg4OC9hcHAva2FuYmFuLWJvYXJkIjtzOjU6InJvdXRlIjtzOjMxOiJmaWxhbWVudC5hcHAucGFnZXMua2FuYmFuLWJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',1778149149);
+INSERT INTO `sessions` VALUES ('bM6jEpbN6KlOmFgtSSIee2xx0cMxex7qQrF8TMGW',1,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo3OntzOjY6Il90b2tlbiI7czo0MDoiOExmczMxd1ZpNFFrbUJBM3NmMHRPQVdZWEh2WFNmWkZlT1pWSFMxVyI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQzOiJodHRwOi8vc3Byb2plY3RzLnRlc3Q6ODg4OC9hcHAvcHJvamVjdC1saXN0IjtzOjU6InJvdXRlIjtzOjMxOiJmaWxhbWVudC5hcHAucGFnZXMucHJvamVjdC1saXN0Ijt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2NDoiNDg5ZDNiNzY0YTllNzllNDNiYTYxNGE0M2YwM2VmNmJmYTAwZWNlMTc1ZWRkNDlmMDIxZTQ3YTQ3ZGEyOTVjNSI7czo4OiJmaWxhbWVudCI7YTowOnt9fQ==',1778152708),('VOXBulsdCsdw3FkEhaI14rzj3sEB8a2gMPQbZTqq',NULL,'127.0.0.1','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36','YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTnN2UWc1eDI0QTRWaWRTZFdXMjNNb1pvREcwbkVTNjlFSHdKYUxJYiI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czo0MzoiaHR0cDovL3Nwcm9qZWN0cy50ZXN0Ojg4ODgvYXBwL2thbmJhbi1ib2FyZCI7fXM6OToiX3ByZXZpb3VzIjthOjI6e3M6MzoidXJsIjtzOjQzOiJodHRwOi8vc3Byb2plY3RzLnRlc3Q6ODg4OC9hcHAva2FuYmFuLWJvYXJkIjtzOjU6InJvdXRlIjtzOjMxOiJmaWxhbWVudC5hcHAucGFnZXMua2FuYmFuLWJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==',1778149149);
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -906,4 +906,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-07 12:46:00
+-- Dump completed on 2026-05-07 13:32:38

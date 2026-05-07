@@ -9,6 +9,7 @@ use App\Models\Task;
 use App\Models\TaskStatus;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 
 class ScrumBoard extends Page
@@ -67,6 +68,12 @@ class ScrumBoard extends Page
     {
         $this->sprintId = Sprint::where('project_id', $this->projectId)
             ->where('status', 'active')->first()?->id;
+        $this->dispatch('scrum-refreshed');
+    }
+
+    public function updatedSprintId(): void
+    {
+        $this->dispatch('scrum-refreshed');
     }
 
     public function getProject(): ?Project
@@ -163,6 +170,7 @@ class ScrumBoard extends Page
         $this->newSprintName = $this->newSprintGoal = $this->newSprintStart = $this->newSprintEnd = '';
 
         Notification::make()->title('Sprint creado')->success()->send();
+        $this->dispatch('scrum-refreshed');
     }
 
     public function startSprint(): void
@@ -170,6 +178,7 @@ class ScrumBoard extends Page
         Sprint::where('id', $this->sprintId)->where('project_id', $this->projectId)
             ->update(['status' => 'active']);
         Notification::make()->title('Sprint iniciado')->success()->send();
+        $this->dispatch('scrum-refreshed');
     }
 
     public function completeSprint(): void
@@ -185,6 +194,7 @@ class ScrumBoard extends Page
             ->update(['sprint_id' => null]);
 
         Notification::make()->title('Sprint completado — tareas pendientes devueltas al backlog')->success()->send();
+        $this->dispatch('scrum-refreshed');
     }
 
     // ── Story CRUD ────────────────────────────────────────────────────
@@ -210,17 +220,20 @@ class ScrumBoard extends Page
     public function moveTask(int $taskId, int $statusId): void
     {
         Task::findOrFail($taskId)->update(['task_status_id' => $statusId]);
+        $this->dispatch('scrum-refreshed');
     }
 
     public function addToSprint(int $taskId): void
     {
         if (!$this->sprintId) return;
         Task::findOrFail($taskId)->update(['sprint_id' => $this->sprintId]);
+        $this->dispatch('scrum-refreshed');
     }
 
     public function removeFromSprint(int $taskId): void
     {
         Task::findOrFail($taskId)->update(['sprint_id' => null]);
+        $this->dispatch('scrum-refreshed');
     }
 
     public function addStoryToSprint(int $storyId): void
@@ -229,11 +242,30 @@ class ScrumBoard extends Page
         Task::findOrFail($storyId)->update(['sprint_id' => $this->sprintId]);
         Task::where('parent_id', $storyId)->update(['sprint_id' => $this->sprintId]);
         Notification::make()->title('Historia y sus tareas añadidas al sprint')->success()->send();
+        $this->dispatch('scrum-refreshed');
     }
 
     public function removeStoryFromSprint(int $storyId): void
     {
         Task::findOrFail($storyId)->update(['sprint_id' => null]);
         Task::where('parent_id', $storyId)->update(['sprint_id' => null]);
+        $this->dispatch('scrum-refreshed');
+    }
+
+    #[On('task-created')]
+    public function onTaskCreated(): void
+    {
+        $this->dispatch('scrum-refreshed');
+    }
+
+    public function canCreateTask(): bool
+    {
+        if (!$this->projectId) return false;
+        $user = auth()->user();
+        if ($user->hasAnyRole(['super_admin', 'admin', 'project_manager'])) return true;
+        $project = Project::find($this->projectId);
+        return $project?->allow_self_assign
+            && ($project->owner_id === $user->id
+                || $project->members()->where('users.id', $user->id)->exists());
     }
 }

@@ -68,6 +68,16 @@
         </a>
         @endif
 
+        {{-- Nueva tarea --}}
+        @if ($project && $this->canCreateTask())
+        <button type="button"
+                onclick="Livewire.dispatch('open-create-task', { projectId: {{ $this->projectId }}, methodology: 'scrum', sprintId: {{ $this->sprintId ?? 'null' }} })"
+                style="display:inline-flex;align-items:center;gap:5px;background-color:#7c3aed;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:0.875rem;cursor:pointer;flex-shrink:0;">
+            <x-heroicon-o-plus style="width:15px;height:15px;"/>
+            Nueva tarea
+        </button>
+        @endif
+
         {{-- Sprint management --}}
         @if ($canManage && $project)
         <div class="ml-auto flex items-center gap-2">
@@ -405,22 +415,29 @@
 @endif{{-- /project --}}
 
     <livewire:task-detail-modal />
+    <livewire:create-task-modal />
 
     @script
     <script>
-        document.querySelectorAll('.scrum-column').forEach(column => {
-            new Sortable(column, {
-                group:       'scrum',
-                animation:   150,
-                ghostClass:  'opacity-40',
-                dragClass:   'shadow-xl',
-                onEnd: function (evt) {
-                    const taskId   = parseInt(evt.item.dataset.task);
-                    const statusId = parseInt(evt.to.dataset.status);
-                    $wire.call('moveTask', taskId, statusId);
-                },
+        const initScrum = () => {
+            document.querySelectorAll('.scrum-column').forEach(col => {
+                if (col._sortable) col._sortable.destroy();
+                col._sortable = new Sortable(col, {
+                    group:      'scrum',
+                    animation:  150,
+                    ghostClass: 'opacity-40',
+                    dragClass:  'shadow-xl',
+                    onEnd(evt) {
+                        const taskId   = parseInt(evt.item.dataset.task);
+                        const statusId = parseInt(evt.to.dataset.status);
+                        $wire.call('moveTask', taskId, statusId);
+                    },
+                });
             });
-        });
+        };
+
+        initScrum();
+        $wire.on('scrum-refreshed', () => setTimeout(initScrum, 50));
     </script>
     @endscript
 </x-filament-panels::page>

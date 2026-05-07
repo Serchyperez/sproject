@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Task;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 
 class KanbanBoard extends Page
@@ -107,6 +108,29 @@ class KanbanBoard extends Page
     public function cancelDrag(): void
     {
         // No DB change — just re-render so the DOM resets to DB state
+        $this->dispatch('task-moved');
+    }
+
+    public function toggleBacklog(): void
+    {
+        $this->showBacklog = !$this->showBacklog;
+        $this->dispatch('backlog-toggled');
+    }
+
+    public function canCreateTask(): bool
+    {
+        if (!$this->projectId) return false;
+        $user = auth()->user();
+        if ($user->hasAnyRole(['super_admin', 'admin', 'project_manager'])) return true;
+        $project = Project::find($this->projectId);
+        return $project?->allow_self_assign
+            && ($project->owner_id === $user->id
+                || $project->members()->where('users.id', $user->id)->exists());
+    }
+
+    #[On('task-created')]
+    public function onTaskCreated(): void
+    {
         $this->dispatch('task-moved');
     }
 }

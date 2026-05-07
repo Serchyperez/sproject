@@ -84,6 +84,11 @@ class ProjectResource extends Resource
                             ->required()
                             ->searchable()
                             ->default(fn () => auth()->id()),
+                        Forms\Components\Toggle::make('allow_self_assign')
+                            ->label('Permitir auto-asignación')
+                            ->helperText('Los miembros del equipo pueden asignarse tareas por sí mismos (sistema pull).')
+                            ->default(false)
+                            ->columnSpanFull(),
                     ]),
             ])->columnSpanFull(),
         ]);

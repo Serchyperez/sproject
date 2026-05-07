@@ -16,7 +16,7 @@
             </select>
 
             @if($this->getProject())
-                <button wire:click="$toggle('showBacklog')"
+                <button wire:click="toggleBacklog"
                         class="text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors">
                     {{ $showBacklog ? '← Ocultar Backlog' : 'Ver Backlog →' }}
                 </button>
@@ -28,6 +28,15 @@
                     <x-heroicon-o-chart-bar style="width:15px;height:15px;"/>
                     Gantt
                 </a>
+
+                @if($this->canCreateTask())
+                <button type="button"
+                        onclick="Livewire.dispatch('open-create-task', { projectId: {{ $this->projectId }}, methodology: 'kanban' })"
+                        style="display:inline-flex;align-items:center;gap:5px;background-color:#7c3aed;color:#fff;border:none;border-radius:8px;padding:5px 12px;font-size:0.875rem;cursor:pointer;flex-shrink:0;">
+                    <x-heroicon-o-plus style="width:15px;height:15px;"/>
+                    Nueva tarea
+                </button>
+                @endif
             @endif
         </div>
 
@@ -96,6 +105,14 @@
                                         WIP
                                     </span>
                                 @endif
+                                @if($this->canCreateTask())
+                                <button type="button"
+                                        onclick="Livewire.dispatch('open-create-task', { projectId: {{ $this->projectId }}, methodology: 'kanban', statusId: {{ $status->id }} })"
+                                        title="Nueva tarea en {{ $status->name }}"
+                                        style="background:none;border:none;cursor:pointer;color:#9ca3af;padding:2px;display:flex;align-items:center;">
+                                    <x-heroicon-o-plus style="width:14px;height:14px;"/>
+                                </button>
+                                @endif
                             </div>
 
                             {{-- WIP limit bar --}}
@@ -156,6 +173,7 @@
     </div>
 
     <livewire:task-detail-modal />
+    <livewire:create-task-modal />
 
     @assets
     <script src="/sortable.min.js"></script>
@@ -216,6 +234,7 @@
 
         initKanban();
         $wire.on('task-moved', () => initKanban());
+        $wire.on('backlog-toggled', () => setTimeout(initKanban, 50));
     </script>
     @endscript
 </x-filament-panels::page>

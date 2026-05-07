@@ -167,6 +167,14 @@
 
                 {{-- Buttons: Gantt + Open board --}}
                 <div style="display:flex;align-items:center;gap:6px;">
+                    @if($canCreate)
+                    <a href="{{ route('filament.app.resources.projects.edit', ['record' => $project->id]) }}"
+                       title="Editar proyecto"
+                       style="display:inline-flex;align-items:center;padding:6px 8px;border-radius:8px;border:1px solid #d1d5db;color:#6b7280;text-decoration:none;"
+                       class="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-300 hover:opacity-80">
+                        <x-heroicon-o-pencil-square style="width:14px;height:14px;"/>
+                    </a>
+                    @endif
                     <a href="{{ route('filament.app.pages.waterfall-view', ['projectId' => $project->id]) }}"
                        title="Ver Gantt"
                        style="display:inline-flex;align-items:center;padding:6px 8px;border-radius:8px;border:1px solid #d1d5db;color:#6b7280;text-decoration:none;font-size:0.75rem;background:#fff;"
@@ -287,6 +295,14 @@
                 {{-- Actions --}}
                 <td style="padding:12px 16px;text-align:right;">
                     <div style="display:inline-flex;align-items:center;gap:6px;">
+                        @if($canCreate)
+                        <a href="{{ route('filament.app.resources.projects.edit', ['record' => $project->id]) }}"
+                           title="Editar proyecto"
+                           style="display:inline-flex;align-items:center;padding:5px 8px;border-radius:6px;border:1px solid #d1d5db;color:#6b7280;text-decoration:none;font-size:0.75rem;"
+                           class="dark:border-gray-600 dark:text-gray-300 hover:opacity-80">
+                            <x-heroicon-o-pencil-square style="width:14px;height:14px;"/>
+                        </a>
+                        @endif
                         <a href="{{ route('filament.app.pages.waterfall-view', ['projectId' => $project->id]) }}"
                            title="Ver Gantt"
                            style="display:inline-flex;align-items:center;padding:5px 8px;border-radius:6px;border:1px solid #d1d5db;color:#6b7280;text-decoration:none;font-size:0.75rem;"
