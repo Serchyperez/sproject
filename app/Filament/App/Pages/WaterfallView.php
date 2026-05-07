@@ -16,6 +16,7 @@ class WaterfallView extends Page
     protected static ?string $navigationLabel = 'Waterfall';
     protected static string  $view            = 'filament.app.pages.waterfall-view';
     protected static ?int    $navigationSort  = 5;
+    protected static bool    $shouldRegisterNavigation = false;
 
     #[Url]
     public ?int $projectId = null;

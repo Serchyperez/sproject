@@ -1,7 +1,13 @@
 <x-filament-panels::page>
     <div>
         {{-- Toolbar --}}
-        <div class="mb-4 flex items-center gap-3">
+        <div class="mb-4 flex items-center gap-3 flex-wrap">
+            {{-- Methodology icon + label --}}
+            <span style="display:inline-flex;align-items:center;gap:5px;background:#dbeafe;color:#1d4ed8;border-radius:9999px;padding:3px 10px;font-size:0.75rem;font-weight:500;flex-shrink:0;">
+                <x-heroicon-o-view-columns style="width:13px;height:13px;"/>
+                Kanban
+            </span>
+
             <select wire:model.live="projectId"
                     class="rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-violet-500">
                 @foreach($this->getProjects() as $project)
@@ -14,6 +20,14 @@
                         class="text-sm px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 transition-colors">
                     {{ $showBacklog ? '← Ocultar Backlog' : 'Ver Backlog →' }}
                 </button>
+
+                {{-- Gantt button --}}
+                <a href="{{ route('filament.app.pages.waterfall-view', ['projectId' => $this->projectId]) }}"
+                   style="display:inline-flex;align-items:center;gap:5px;border:1px solid #d1d5db;border-radius:8px;padding:5px 12px;font-size:0.875rem;color:#374151;text-decoration:none;background:#fff;flex-shrink:0;"
+                   class="dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 hover:opacity-80">
+                    <x-heroicon-o-chart-bar style="width:15px;height:15px;"/>
+                    Gantt
+                </a>
             @endif
         </div>
 

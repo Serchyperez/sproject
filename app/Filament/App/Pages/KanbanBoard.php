@@ -10,10 +10,11 @@ use Livewire\Attributes\Url;
 
 class KanbanBoard extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-view-columns';
+    protected static ?string $navigationIcon  = 'heroicon-o-view-columns';
     protected static ?string $navigationLabel = 'Kanban';
-    protected static string $view = 'filament.app.pages.kanban-board';
-    protected static ?int $navigationSort = 2;
+    protected static string  $view            = 'filament.app.pages.kanban-board';
+    protected static ?int    $navigationSort  = 2;
+    protected static bool    $shouldRegisterNavigation = false;
 
     #[Url]
     public ?int $projectId = null;

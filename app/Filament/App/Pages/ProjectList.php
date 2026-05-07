@@ -4,6 +4,7 @@ namespace App\Filament\App\Pages;
 
 use App\Models\Project;
 use Filament\Pages\Page;
+use Livewire\Attributes\Url;
 
 class ProjectList extends Page
 {
@@ -12,11 +13,23 @@ class ProjectList extends Page
     protected static string  $view            = 'filament.app.pages.project-list';
     protected static ?int    $navigationSort  = 1;
 
+    #[Url]
+    public string $search = '';
+
+    #[Url]
+    public string $viewMode = 'cards';
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->hasAnyRole(['super_admin', 'admin', 'project_manager']) ?? false;
+    }
+
     public function getProjects()
     {
         $user = auth()->user();
 
         return Project::visibleTo($user)
+            ->when($this->search, fn ($q) => $q->where('name', 'like', "%{$this->search}%"))
             ->withCount([
                 'tasks',
                 'tasks as done_tasks_count' => fn ($q) => $q->whereHas(

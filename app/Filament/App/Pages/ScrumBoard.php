@@ -17,6 +17,7 @@ class ScrumBoard extends Page
     protected static ?string $navigationLabel = 'Scrum';
     protected static string  $view            = 'filament.app.pages.scrum-board';
     protected static ?int    $navigationSort  = 3;
+    protected static bool    $shouldRegisterNavigation = false;
 
     #[Url]
     public ?int $projectId = null;

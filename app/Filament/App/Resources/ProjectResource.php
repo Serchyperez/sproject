@@ -20,12 +20,17 @@ class ProjectResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->hasRole(['super_admin', 'admin']) ?? false;
+        return auth()->user()?->hasAnyRole(['super_admin', 'admin', 'project_manager']) ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->hasAnyRole(['super_admin', 'admin', 'project_manager']) ?? false;
     }
 
     public static function shouldRegisterNavigation(): bool
     {
-        return auth()->user()?->hasRole(['super_admin', 'admin']) ?? false;
+        return false; // Managed from "Mis Proyectos"
     }
 
     public static function form(Form $form): Form

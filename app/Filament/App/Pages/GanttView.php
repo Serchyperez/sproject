@@ -10,10 +10,11 @@ use Livewire\Attributes\Url;
 
 class GanttView extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
+    protected static ?string $navigationIcon  = 'heroicon-o-chart-bar';
     protected static ?string $navigationLabel = 'Gantt';
-    protected static string $view = 'filament.app.pages.gantt-view';
-    protected static ?int $navigationSort = 4;
+    protected static string  $view            = 'filament.app.pages.gantt-view';
+    protected static ?int    $navigationSort  = 4;
+    protected static bool    $shouldRegisterNavigation = false;
 
     #[Url]
     public ?int $projectId = null;
